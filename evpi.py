@@ -1,24 +1,7 @@
 import numpy as np
-import pandas as pd
-
-n_samples = 100000
-n_bins = 10
-
-x = pd.DataFrame(columns=["a", "b", "c"])
-y = pd.DataFrame(columns=["x", "y", "z"])
-x.a = np.random.normal(10, 5, n_samples)
-x.b = np.random.normal(-10, 0.0005, n_samples)
-x.c = np.random.normal(20, 15, n_samples)
-
-y.x = x.a + x.b + 3
-y.y = x.b * 2 + x.c
-y.z = x.a * x.b + 5 * x.c
-
-xvar = "a"
-yvar = "x"
 
 
-def evpi(x, y):
+def evpi(x, y, n_bins):
     """Calculates EVPI for one estimate and one decision criterion.
     EVPI means "Expected Value of Perfect Information" and can be described
     as a measure for what a decision maker would be willing to pay for zero
@@ -35,6 +18,8 @@ def evpi(x, y):
         decision criterion for a risk-neutral decision maker facing a binary
         decision, so that a positive expected value will lead to `yes` and a
         negative one to `no`.
+    n_bins : int
+        Number of bins to use for the histogram.
     """
 
     # expected value in the case of "yes"
@@ -56,8 +41,6 @@ def evpi(x, y):
             Input samples.
         y : array_like
             Output samples.
-        hist_bins : 1-D array
-            Histogram bin limits.
         n_bins : int
             Number of histogram bins.
 
@@ -84,6 +67,3 @@ def evpi(x, y):
     evpi = ev_pi - emv
 
     return evpi
-
-
-evpi(x[xvar], y[yvar])

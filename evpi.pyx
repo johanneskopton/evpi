@@ -1,18 +1,22 @@
 import numpy as np
+cimport numpy as np
+cimport cython
 
 
-def ev_pi_bins(x, y, n_bins):
+@cython.boundscheck(False)  # Deactivate bounds checking
+@cython.wraparound(False)   # Deactivate negative indexing.
+cdef float ev_pi_bins_sum(np.ndarray[np.float_t, ndim=1] x, np.ndarray[np.float_t, ndim=1] y, int n_bins):
     """Loops through the bins of a histogram over the input and yields the
         sum of the respective output samples if positive, zero otherwise.
 
         Parameters
         ----------
-        x : array_like
+        x : 1D array
             Input samples.
-        y : array_like
+        y : 1D array
             Output samples.
         n_bins : int
-            Number of histogram bins.
+            Number of non-empty histogram bins.
 
         Yields
         ------
@@ -23,18 +27,29 @@ def ev_pi_bins(x, y, n_bins):
         """
 
     # divide the estimate samples into `n_bins`
-    hist_bins = np.histogram(x, bins=n_bins)[1]
+    cdef int total_n_bins = n_bins
+    cdef int filled_n_bins = 0
+    while filled_n_bins < n_bins:
+        total_n_bins += filled_n_bins
+        hist, hist_bins = np.histogram(x, bins=total_n_bins)
+        filled_n_bins = np.count_nonzero(hist)
 
-    for i in range(n_bins):
+    cdef float sum_res = 0
+
+    for i in range(total_n_bins):
         # create a binary mask for samples inside the bin
         subset_mask = (hist_bins[i] <= x) * (x < hist_bins[i+1])
         # apply this mask on the output
         y_subset = y[subset_mask]
         # return sum of this output if positive, otherwise zero
-        yield max(np.sum(y_subset), 0)
+        sum_res += max(sum(y_subset), 0)
+    
+    return sum_res
 
 
-def evpi(x, y, n_bins):
+@cython.boundscheck(False)  # Deactivate bounds checking
+@cython.wraparound(False)   # Deactivate negative indexing.
+def evpi(x, y, int n_bins=0):
     """Calculates EVPI for one estimate and one decision criterion.
     EVPI means "Expected Value of Perfect Information" and can be described
     as a measure for what a decision maker would be willing to pay for zero
@@ -52,19 +67,27 @@ def evpi(x, y, n_bins):
         decision, so that a positive expected value will lead to `yes` and a
         negative one to `no`.
     n_bins : int
-        Number of bins to use for the histogram.
+        Number of non-empty bins to use for the histogram. Defaults to 3rd
+        root of sample number.
     """
+    cdef np.ndarray[np.float_t, ndim=1] x_arr = np.array(x)
+    cdef np.ndarray[np.float_t, ndim=1] y_arr = np.array(y)
+
+    cdef int n_samples = len(x)
+
+    if n_bins == 0:
+        n_bins = np.cbrt(n_samples)
 
     # expected value in the case of "yes"
-    ev_yes = np.mean(y)
+    cdef float ev_yes = np.mean(y)
 
     # expected value in the case of "no"
-    ev_no = 0
+    cdef float ev_no = 0
 
     # expected maximum value
-    emv = max(ev_no, ev_yes)
+    cdef float emv = max(ev_no, ev_yes)
 
-    ev_pi = sum(ev_pi_bins(x, y, n_bins)) / len(x)
-    evpi = ev_pi - emv
+    cdef float ev_pi = ev_pi_bins_sum(x_arr, y_arr, n_bins) / n_samples
+    cdef float evpi = ev_pi - emv
 
     return evpi

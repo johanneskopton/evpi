@@ -3,8 +3,8 @@ cimport numpy as np
 cimport cython
 
 
-@cython.boundscheck(False)  # Deactivate bounds checking
-@cython.wraparound(False)   # Deactivate negative indexing.
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef float ev_pi_bins_sum(np.ndarray[np.float_t, ndim=1] x, np.ndarray[np.float_t, ndim=1] y, int n_bins):
     """Loops through the bins of a histogram over the input and yields the
         sum of the respective output samples if positive, zero otherwise.
@@ -18,10 +18,10 @@ cdef float ev_pi_bins_sum(np.ndarray[np.float_t, ndim=1] x, np.ndarray[np.float_
         n_bins : int
             Number of non-empty histogram bins.
 
-        Yields
+        Returns
         ------
         int
-            Sum of optimal decision option output for each bin. Can be
+            Sum of optimal decision option outputs for each bin. Can be
             interpreted as the expected value weighted with the number of
             samples in the bin.
         """
@@ -47,8 +47,8 @@ cdef float ev_pi_bins_sum(np.ndarray[np.float_t, ndim=1] x, np.ndarray[np.float_
     return sum_res
 
 
-@cython.boundscheck(False)  # Deactivate bounds checking
-@cython.wraparound(False)   # Deactivate negative indexing.
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def evpi(x, y, int n_bins=0):
     """Calculates EVPI for one estimate and one decision criterion.
     EVPI means "Expected Value of Perfect Information" and can be described
@@ -57,12 +57,12 @@ def evpi(x, y, int n_bins=0):
 
     Parameters
     ----------
-    x : array_like
+    x : 1D array_like
         Monte Carlo samples from the probability distribution of the
         considered estimate or "input" variable.
-    y : array_like
-        The respective criterion or "output" samples calculated using the
-        estimate samples above. This criterion is considered to be the (only)
+    y : 1D array_like
+        The respective utility (aka outcome) samples calculated using the
+        estimate samples above. This utility is considered to be the (only)
         decision criterion for a risk-neutral decision maker facing a binary
         decision, so that a positive expected value will lead to `yes` and a
         negative one to `no`.

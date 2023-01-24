@@ -79,7 +79,7 @@ def evpi(x, y, int n_bins=0):
         n_bins = np.cbrt(n_samples)
 
     # expected value in the case of "yes"
-    cdef float ev_yes = np.mean(y)
+    cdef float ev_yes = np.mean(y_arr)
 
     # expected value in the case of "no"
     cdef float ev_no = 0

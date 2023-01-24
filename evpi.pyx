@@ -29,7 +29,7 @@ cdef float ev_pi_bins_sum(np.ndarray[np.float_t, ndim=1] x, np.ndarray[np.float_
     # divide the estimate samples into `n_bins`
     cdef int total_n_bins = n_bins
     cdef int filled_n_bins = 0
-    while filled_n_bins < n_bins:
+    while filled_n_bins < n_bins and total_n_bins < 500:
         total_n_bins += filled_n_bins
         hist, hist_bins = np.histogram(x, bins=total_n_bins)
         filled_n_bins = np.count_nonzero(hist)

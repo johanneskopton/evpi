@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def calc_ev_pi(x, y, n_bins, min_samples_per_bin):
+def calc_ev_pi(x, y, n_bins):
     """Expected outcome given perfect information on x.
     Loops through the bins of a histogram over the input and calculated the sum
     of the respective output samples if positive, zero otherwise. This is then
@@ -16,13 +16,6 @@ def calc_ev_pi(x, y, n_bins, min_samples_per_bin):
         Output samples.
     n_bins : int
         Number of non-empty histogram bins.
-    min_samples_per_bin: int
-        Since the expected value for just a handful of samples will
-        always describe this bin a lot better than the expected
-        value of the entire population (even though the sampling might
-        have been completely random), this will seem like there is
-        significant information value, when in fact there is not.
-        Therefore bins with too few samples are kicked out.
 
     Returns
     ------
@@ -30,19 +23,30 @@ def calc_ev_pi(x, y, n_bins, min_samples_per_bin):
         Expected outcome given perfect information on x.
     """
 
+    # Since the expected value for just a handful of samples will
+    # always describe this bin a lot better than the expected
+    # value of the entire population (even though the sampling might
+    # have been completely random), this might seem like there is
+    # significant information value, when in fact there is not.
+    # Therefore bins with too few samples are kicked out.
+    # (Up to this point, this value showed no big impact in my tests.)
+    MIN_SAMPLES_PER_BIN = 10
+
+    # Just a safety limit to avoid infinite loops for really weird input
+    # distributions
+    MAX_N_BINS = 1000
+
     # increase the number of total bins, so we have at least `n_bins`
     # bins with enough samples in them
     total_n_bins = n_bins
     n_bins_sufficient = 0
-    # the 1000 is just a safety limit to avoid infinite loops for
-    # really weird input distributions
-    while n_bins_sufficient < n_bins and total_n_bins < 1000:
+    while n_bins_sufficient < n_bins and total_n_bins < MAX_N_BINS:
         total_n_bins += n_bins_sufficient
 
         # divide the estimate samples into histogram bins
         hist, hist_bins = np.histogram(x, bins=total_n_bins)
         # check which histogram bins have enough samples
-        sufficiency_mask = hist >= min_samples_per_bin
+        sufficiency_mask = hist >= MIN_SAMPLES_PER_BIN
         # count number of bins with enough samples
         n_bins_sufficient = np.count_nonzero(sufficiency_mask)
 
@@ -75,7 +79,7 @@ def calc_ev_pi(x, y, n_bins, min_samples_per_bin):
     return ev_pi
 
 
-def evpi(x, y, n_bins=0, min_samples_per_bin=10):
+def evpi(x, y, n_bins=0, significance_threshold=1e-2):
     """Calculates EVPI for one estimate and one decision criterion.
     EVPI means "Expected Value of Perfect Information" and can be described
     as a measure for what a decision maker would be willing to pay for zero
@@ -92,16 +96,13 @@ def evpi(x, y, n_bins=0, min_samples_per_bin=10):
         decision criterion for a risk-neutral decision maker facing a binary
         decision, so that a positive expected value will lead to `yes` and a
         negative one to `no`.
+    significance_threshold : float
+        EVPIs below this multiplied by a metric for the "outcome in question"
+        will be set to zero, since really small positive values are mostly
+        numerical artifacts.
     n_bins : int
         Number of non-empty bins to use for the histogram. Defaults to 3rd
         root of sample number.
-    min_samples_per_bin: int, default=10
-        Since the expected value for just a handful of samples will
-        always describe this bin a lot better than the expected
-        value of the entire population (even though the sampling might
-        have been completely random), this will seem like there is
-        significant information value, when in fact there is not.
-        Therefore bins with too few samples are kicked out.
     """
     x = np.array(x)
     # if input is deterministic, further information can not have any value
@@ -125,7 +126,7 @@ def evpi(x, y, n_bins=0, min_samples_per_bin=10):
     emv = max(0, ev_yes)
 
     # expected value in case of perfect information on variable
-    ev_pi = calc_ev_pi(x, y, n_bins, min_samples_per_bin)
+    ev_pi = calc_ev_pi(x, y, n_bins)
 
     # expected value of perfect information
     evpi = ev_pi - emv
@@ -137,8 +138,8 @@ def evpi(x, y, n_bins=0, min_samples_per_bin=10):
     outcome_std = np.std(y)
     outcome_in_question = np.max(np.abs(ev_yes) + outcome_std)
 
-    # Round EVPIs smaller than 1% of this amount of outcome to zero.
-    if evpi < outcome_in_question * 1e-2:
+    # Set EVPIs smaller than by default 1% of this amount of outcome to zero.
+    if evpi < outcome_in_question * significance_threshold:
         evpi = 0
 
     return evpi

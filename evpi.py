@@ -67,6 +67,9 @@ def evpi(x, y, n_bins=0):
         Number of non-empty bins to use for the histogram. Defaults to 3rd
         root of sample number.
     """
+    x = np.array(x)
+    y = np.array(y)
+
     # expected value in the case of "yes"
     ev_yes = np.mean(y)
 

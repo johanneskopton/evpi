@@ -68,6 +68,9 @@ def evpi(x, y, n_bins=0):
         root of sample number.
     """
     x = np.array(x)
+    if np.all(x == x[0]):
+        return 0
+
     y = np.array(y)
 
     # expected value in the case of "yes"

@@ -119,11 +119,10 @@ def evpi(x, y, n_bins=0, min_samples_per_bin=10):
     if n_bins == 0:
         n_bins = int(np.cbrt(n_samples))
 
-    # expected value in the case of "no"
-    ev_no = 0
+    # expected value in the case of "no" = 0
 
     # expected maximum value
-    emv = max(ev_no, ev_yes)
+    emv = max(0, ev_yes)
 
     # expected value in case of perfect information on variable
     ev_pi = calc_ev_pi(x, y, n_bins, min_samples_per_bin)

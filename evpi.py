@@ -130,4 +130,15 @@ def evpi(x, y, n_bins=0, min_samples_per_bin=10):
     # expected value of perfect information
     evpi = ev_pi - emv
 
+    # Since this method tends to overestimate EVPIs, that are actually zero,
+    # we want to test, if the EVPI is "significant" (not in the sense of a
+    # statistical test). Therefore we define a measure of how much outcome
+    # (money, ...) is in question here.
+    outcome_std = np.std(y)
+    outcome_in_question = np.max(np.abs(ev_yes) + outcome_std)
+
+    # Round EVPIs smaller than 1% of this amount of outcome to zero.
+    if evpi < outcome_in_question * 1e-2:
+        evpi = 0
+
     return evpi

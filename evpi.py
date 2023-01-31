@@ -1,9 +1,12 @@
 import numpy as np
 
 
-    """Loops through the bins of a histogram over the input and yields the sum
-    of the respective output samples if positive, zero otherwise.
 def calc_ev_pi(x, y, n_bins, min_samples_per_bin):
+    """Expected outcome given perfect information on x.
+    Loops through the bins of a histogram over the input and calculated the sum
+    of the respective output samples if positive, zero otherwise. This is then
+    normalized by the number of samples considered. The result can be though of
+    as weighted average over the respective expected outcomes of all the bins.
 
     Parameters
     ----------
@@ -24,8 +27,7 @@ def calc_ev_pi(x, y, n_bins, min_samples_per_bin):
     Returns
     ------
     int
-        Sum of optimal decision option outputs for each bin. Can be interpreted
-        as the expected value weighted with the number of samples in the bin.
+        Expected outcome given perfect information on x.
     """
 
     # increase the number of total bins, so we have at least `n_bins`
@@ -37,7 +39,7 @@ def calc_ev_pi(x, y, n_bins, min_samples_per_bin):
     while n_bins_sufficient < n_bins and total_n_bins < 1000:
         total_n_bins += n_bins_sufficient
 
-        # divide the estimate samples into `bins`
+        # divide the estimate samples into histogram bins
         hist, hist_bins = np.histogram(x, bins=total_n_bins)
         # check which histogram bins have enough samples
         sufficiency_mask = hist >= min_samples_per_bin
@@ -60,7 +62,12 @@ def calc_ev_pi(x, y, n_bins, min_samples_per_bin):
 
         # apply this mask on the output
         y_subset = y[subset_mask]
-        # return sum of this output if positive, otherwise zero
+        # `np.sum(y_subset)` can be considered the expected outcome for
+        # this bin multiplied by number of samples in this bin. Since we
+        # use zero, if this expected outcome is negative, we simulate knowing
+        # that this bin contains the true sample.
+        # By summing and normalization with `n_samples_considered`, we get the
+        # weighted sum of expected outcomes.
         sum_res += max(np.sum(y_subset), 0)
 
     # now the normalization
@@ -97,6 +104,7 @@ def evpi(x, y, n_bins=0, min_samples_per_bin=10):
         Therefore bins with too few samples are kicked out.
     """
     x = np.array(x)
+    # if input is deterministic, further information can not have any value
     if np.all(x == x[0]):
         return 0
 

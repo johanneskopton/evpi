@@ -30,7 +30,7 @@ def calc_ev_pi(x, y, n_bins):
     # significant information value, when in fact there is not.
     # Therefore bins with too few samples are kicked out.
     # (Up to this point, this value showed no big impact in my tests.)
-    MIN_SAMPLES_PER_BIN = 10
+    MIN_SAMPLES_PER_BIN = 1
 
     # Just a safety limit to avoid infinite loops for really weird input
     # distributions

@@ -79,7 +79,7 @@ def calc_ev_pi(x, y, n_bins):
     return ev_pi
 
 
-def evpi(x, y, n_bins=0, significance_threshold=1e-2):
+def evpi(x, y, n_bins=None):
     """Calculates EVPI for one estimate and one decision criterion.
     EVPI means "Expected Value of Perfect Information" and can be described
     as a measure for what a decision maker would be willing to pay for zero
@@ -99,10 +99,6 @@ def evpi(x, y, n_bins=0, significance_threshold=1e-2):
     n_bins : int
         Number of non-empty bins to use for the histogram. Defaults to 3rd
         root of sample number.
-    significance_threshold : float
-        EVPIs below this multiplied by a metric for the "outcome in question"
-        will be set to zero, since really small positive values are mostly
-        numerical artifacts.
     """
     x = np.array(x)
     # if input is deterministic, further information can not have any value
@@ -125,21 +121,84 @@ def evpi(x, y, n_bins=0, significance_threshold=1e-2):
     # expected maximum value
     emv = max(0, ev_yes)
 
-    # expected value in case of perfect information on variable
+    # expected value given perfect information on variable
     ev_pi = calc_ev_pi(x, y, n_bins)
 
     # expected value of perfect information
     evpi = ev_pi - emv
 
-    # Since this method tends to overestimate EVPIs, that are actually zero,
-    # we want to test, if the EVPI is "significant" (not in the sense of a
-    # statistical test). Therefore we define a measure of how much outcome
-    # (money, ...) is in question here.
-    outcome_std = np.std(y)
-    outcome_in_question = np.abs(ev_yes) + outcome_std
-
-    # Set EVPIs smaller than by default 1% of this amount of outcome to zero.
-    if evpi < outcome_in_question * significance_threshold:
-        evpi = 0
-
     return evpi
+
+
+def tevpi(y):
+    """Total EVPI.
+    Expected value of making always the best decision. If the model itself is
+    deterministic, i.e. the only source of uncertainty are the inout variables,
+    this value should correspond to the sum of all individual EVPIs.
+
+    Parameters
+    ----------
+    y : 1D array_like
+        Monte carlo samples of model output (utility). S. `evpi`.
+    """
+
+    y = np.array(y)
+
+    # expected value in the case of "yes"
+    ev_yes = np.mean(y)
+
+    # expected maximum value
+    emv = max(0, ev_yes)
+
+    # outcome given perfect information
+    y_pi = y  # be careful, this does not copy `y`
+    y_pi[y_pi < 0] = 0
+
+    # expected value given perfect information on variable
+    ev_pi = np.mean(y_pi)
+
+    # expected value of perfect information
+    tevpi = ev_pi - emv
+
+    return tevpi
+
+
+def multi_evpi(x, y, n_bins=None, significance_threshold=5e-2):
+    """Calculate evpi for multiple input variables and one output variable.
+
+    Parameters
+    ----------
+    x : 2D array_like
+        Monte Carlo samples from the probability distribution of the
+        considered estimates or "input" variables. Columns are variables,
+        rows are samples.
+    y : 1D array_like
+        The respective utility (aka outcome) samples calculated using the
+        estimate samples above. This utility is considered to be the (only)
+        decision criterion for a risk-neutral decision maker facing a binary
+        decision, so that a positive expected value will lead to `yes` and a
+        negative one to `no`.
+    n_bins : int
+        Number of non-empty bins to use for the histogram.
+    significance_threshold : float
+        Percentage of the total EVPI, below which EVPI values will be set to
+        zero, since really small positive values are mostly numerical
+        artifacts.
+    """
+    x = np.array(x)
+    y = np.array(y)
+
+    n_variables = x.shape[1]
+    evpi_results = np.zeros(n_variables)
+    tevpi_result = tevpi(y)
+    for i in range(n_variables):
+        this_evpi = evpi(x[:, i], y, n_bins)
+
+        # Since this method tends to overestimate EVPIs, that are actually
+        # zero, we want to test, if the EVPI is "significant" (not in the
+        # sense of a statistical test).
+        if this_evpi < tevpi_result * significance_threshold:
+            this_evpi = 0
+        evpi_results[i] = this_evpi
+
+    return evpi_results

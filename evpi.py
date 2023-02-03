@@ -96,13 +96,13 @@ def evpi(x, y, n_bins=0, significance_threshold=1e-2):
         decision criterion for a risk-neutral decision maker facing a binary
         decision, so that a positive expected value will lead to `yes` and a
         negative one to `no`.
+    n_bins : int
+        Number of non-empty bins to use for the histogram. Defaults to 3rd
+        root of sample number.
     significance_threshold : float
         EVPIs below this multiplied by a metric for the "outcome in question"
         will be set to zero, since really small positive values are mostly
         numerical artifacts.
-    n_bins : int
-        Number of non-empty bins to use for the histogram. Defaults to 3rd
-        root of sample number.
     """
     x = np.array(x)
     # if input is deterministic, further information can not have any value

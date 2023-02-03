@@ -136,7 +136,7 @@ def evpi(x, y, n_bins=0, significance_threshold=1e-2):
     # statistical test). Therefore we define a measure of how much outcome
     # (money, ...) is in question here.
     outcome_std = np.std(y)
-    outcome_in_question = np.max(np.abs(ev_yes) + outcome_std)
+    outcome_in_question = np.abs(ev_yes) + outcome_std
 
     # Set EVPIs smaller than by default 1% of this amount of outcome to zero.
     if evpi < outcome_in_question * significance_threshold:

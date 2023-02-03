@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def calc_ev_pi(x, y, n_bins):
+def calc_comparative_ev_pi(x, y, n_bins):
     """Loops through the bins of a histogram over the input and returns the
     highest sum of the respective output samples.
 
@@ -123,7 +123,7 @@ def comparative_evpi(x, y, n_bins=0, significance_threshold=1e-2):
     # expected maximum value
     emv = np.max(ev)
 
-    ev_pi = calc_ev_pi(x, y, n_bins)
+    ev_pi = calc_comparative_ev_pi(x, y, n_bins)
     evpi = ev_pi - emv
 
     # Since this method tends to overestimate EVPIs, that are actually zero,

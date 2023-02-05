@@ -113,7 +113,7 @@ def evpi(x, y, n_bins=None):
     n_samples = len(x)
 
     # use cubic root of sample number as default
-    if n_bins == 0:
+    if n_bins is None:
         n_bins = int(np.cbrt(n_samples))
 
     # expected value in the case of "no" = 0

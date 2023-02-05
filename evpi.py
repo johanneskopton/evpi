@@ -133,7 +133,7 @@ def evpi(x, y, n_bins=None):
 def tevpi(y):
     """Total EVPI.
     Expected value of making always the best decision. If the model itself is
-    deterministic, i.e. the only source of uncertainty are the inout variables,
+    deterministic, i.e. the only source of uncertainty are the input variables,
     this value should correspond to the sum of all individual EVPIs.
 
     Parameters

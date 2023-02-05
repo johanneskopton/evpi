@@ -123,3 +123,83 @@ def comparative_evpi(x, y, n_bins=None):
     evpi = ev_pi - emv
 
     return evpi
+
+
+def comparative_tevpi(y):
+    """Comparative total EVPI.
+    Expected value of making always the best decision. If the model itself is
+    deterministic, i.e. the only source of uncertainty are the input variables,
+    this value should correspond to the sum of all individual comparative
+    EVPIs.
+
+    Parameters
+    ----------
+    y : 2D array_like
+        The respective utility (aka outcome) samples calculated using the
+        estimate samples of x. This criterion is considered to be the (only)
+        decision criterion for a risk-neutral decision maker, that chooses
+        the option with the highest expected utility. Samples are rows,
+        decision options are columns.
+    """
+
+    y = np.array(y)
+
+    # expected value in the case of "yes"
+    ev = np.mean(y, axis=0)
+
+    # expected maximum value
+    emv = np.max(ev)
+
+    # outcome given perfect information
+    y_pi = np.max(y, axis=1)
+
+    # expected value given perfect information
+    ev_pi = np.mean(y_pi)
+
+    # mean and max are basically swapped
+
+    # expected value of perfect information
+    tevpi = ev_pi - emv
+
+    return tevpi
+
+
+def comparative_multi_evpi(x, y, n_bins=None, significance_threshold=1e-3):
+    """Calculate evpi for multiple input variables and one output variable.
+
+    Parameters
+    ----------
+    x : 2D array_like
+        Monte Carlo samples from the probability distribution of the
+        considered estimates or "input" variables. Columns are variables,
+        rows are samples.
+    y : 2D array_like
+        The respective utility (aka outcome) samples calculated using the
+        estimate samples of x. This criterion is considered to be the (only)
+        decision criterion for a risk-neutral decision maker, that chooses
+        the option with the highest expected utility. Samples are rows,
+        decision options are columns.
+    n_bins : int
+        Number of non-empty bins to use for the histogram.
+    significance_threshold : float
+        Percentage of the total EVPI, below which EVPI values will be set to
+        zero, since really small positive values are mostly numerical
+        artifacts.
+    """
+    x = np.array(x)
+    y = np.array(y)
+
+    n_variables = x.shape[1]
+    evpi_results = np.zeros(n_variables)
+    tevpi_result = comparative_tevpi(y)
+    for i in range(n_variables):
+        this_evpi = comparative_evpi(x[:, i], y, n_bins)
+
+        # Since this method tends to overestimate EVPIs, that are actually
+        # zero, we want to test, if the EVPI is "significant" (not in the
+        # sense of a statistical test).
+        if this_evpi < tevpi_result * significance_threshold:
+            this_evpi = 0
+        evpi_results[i] = this_evpi
+
+    return evpi_results

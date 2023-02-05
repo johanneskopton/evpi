@@ -80,7 +80,7 @@ def calc_comparative_ev_pi(x, y, n_bins):
     return ev_pi
 
 
-def comparative_evpi(x, y, n_bins=0, significance_threshold=1e-2):
+def comparative_evpi(x, y, n_bins=None):
     """Calculates EVPI for one estimate and one decision criterion.
     EVPI means "Expected Value of Perfect Information" and can be described
     as a measure for what a decision maker would be willing to pay for zero
@@ -101,10 +101,6 @@ def comparative_evpi(x, y, n_bins=0, significance_threshold=1e-2):
     n_bins : int
         Number of non-empty bins to use for the histogram. Defaults to 3rd
         root of sample number.
-    significance_threshold : float
-        EVPIs below this multiplied by a metric for the "outcome in question"
-        will be set to zero, since really small positive values are mostly
-        numerical artifacts.
     """
     x = np.array(x)
     if np.all(x == x[0]):
@@ -114,7 +110,7 @@ def comparative_evpi(x, y, n_bins=0, significance_threshold=1e-2):
     n_samples = x.shape[0]
 
     # use cubic root of sample number as default
-    if n_bins == 0:
+    if n_bins is None:
         n_bins = int(np.cbrt(n_samples))
 
     # expected values for all options
@@ -125,18 +121,5 @@ def comparative_evpi(x, y, n_bins=0, significance_threshold=1e-2):
 
     ev_pi = calc_comparative_ev_pi(x, y, n_bins)
     evpi = ev_pi - emv
-
-    # Since this method tends to overestimate EVPIs, that are actually zero,
-    # we want to test, if the EVPI is "significant" (not in the sense of a
-    # statistical test). Therefore we define a measure of how much outcome
-    # (money, ...) is in question here.
-    apriori_best_option_idx = np.argmax(ev)
-    expected_value_worst_option = np.min(ev)
-    std_best_option = np.std(y[apriori_best_option_idx])
-    outcome_in_question = emv - expected_value_worst_option + std_best_option
-
-    # Set EVPIs smaller than by default 1% of this amount of outcome to zero.
-    if evpi < outcome_in_question * significance_threshold:
-        evpi = 0
 
     return evpi

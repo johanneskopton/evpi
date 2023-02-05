@@ -154,7 +154,7 @@ def tevpi(y):
     y_pi = y  # be careful, this does not copy `y`
     y_pi[y_pi < 0] = 0
 
-    # expected value given perfect information on variable
+    # expected value given perfect information
     ev_pi = np.mean(y_pi)
 
     # expected value of perfect information

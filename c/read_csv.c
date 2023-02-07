@@ -53,16 +53,22 @@ double** get_vals(FILE *fp, unsigned int n_samples, unsigned int n_vars)
     return result;
 }
 
-int main()
+double** parse_csv(char* path)
 {
     FILE *fp;
-
-    fp = fopen("../test_data/x.csv","r");
-    unsigned int n_samples_x = count_samples(fp);
-    unsigned int n_vars_x = count_vars(fp);
-    double **result_ptr = get_vals(fp, n_samples_x, n_vars_x);
-    
+    fp = fopen(path,"r");
+    unsigned int n_samples = count_samples(fp);
+    unsigned int n_vars = count_vars(fp);
+    double** res = get_vals(fp, n_samples, n_vars);
     fclose(fp);
+    return(res);
+}
+
+int main()
+{
+    double** x = parse_csv("../test_data/x.csv");
+    double** y = parse_csv("../test_data/y.csv");
+    
     return 0;
 
 }

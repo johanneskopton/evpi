@@ -23,7 +23,7 @@ unsigned int count_vars(FILE *fp)
     return varcount;
 }
 
-double** get_vals(FILE *fp, unsigned int n_samples, unsigned int n_vars)
+double** get_vals(FILE *fp, size_t n_samples, size_t n_vars)
 {
     // set up 2d array as pointer of pointers
     double *data = malloc(n_samples * n_vars * sizeof(double));
@@ -33,7 +33,7 @@ double** get_vals(FILE *fp, unsigned int n_samples, unsigned int n_vars)
     // parse csv into this array
     char row[MAXCHAR];
     char *token;
-    unsigned int i, j;
+    size_t i, j;
     i = 0;
     fgets(row, MAXCHAR, fp); // skip first row (header)
     while (feof(fp) != true)
@@ -57,8 +57,8 @@ double** parse_csv(char* path)
 {
     FILE *fp;
     fp = fopen(path,"r");
-    unsigned int n_samples = count_samples(fp);
-    unsigned int n_vars = count_vars(fp);
+    size_t n_samples = count_samples(fp);
+    size_t n_vars = count_vars(fp);
     double** res = get_vals(fp, n_samples, n_vars);
     fclose(fp);
     return(res);
@@ -70,5 +70,4 @@ int main()
     double** y = parse_csv("../test_data/y.csv");
     
     return 0;
-
 }

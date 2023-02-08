@@ -68,9 +68,9 @@ double** parse_csv(char* path, size_t* n_samples, size_t* n_vars)
     fp = fopen(path,"r");
     *n_samples = count_samples(fp);
     *n_vars = count_vars(fp);
-    double** res = get_vals(fp, *n_samples, *n_vars);
+    double** matrix = get_vals(fp, *n_samples, *n_vars);
     fclose(fp);
-    return(res);
+    return(matrix);
 }
 
 int main()

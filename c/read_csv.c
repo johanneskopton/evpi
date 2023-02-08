@@ -53,21 +53,33 @@ double** get_vals(FILE *fp, size_t n_samples, size_t n_vars)
     return result;
 }
 
-double** parse_csv(char* path)
+double* get_col(double** matrix, size_t n_samples, size_t n_vars, size_t col_idx)
+{
+    double *column = malloc(n_samples * sizeof(double));
+    for(size_t i=0; i<n_samples; i++){
+        column[i] = matrix[i][col_idx];
+    }
+    return column;
+}
+
+double** parse_csv(char* path, size_t* n_samples, size_t* n_vars)
 {
     FILE *fp;
     fp = fopen(path,"r");
-    size_t n_samples = count_samples(fp);
-    size_t n_vars = count_vars(fp);
-    double** res = get_vals(fp, n_samples, n_vars);
+    *n_samples = count_samples(fp);
+    *n_vars = count_vars(fp);
+    double** res = get_vals(fp, *n_samples, *n_vars);
     fclose(fp);
     return(res);
 }
 
 int main()
 {
-    double** x = parse_csv("../test_data/x.csv");
-    double** y = parse_csv("../test_data/y.csv");
+    size_t n_samples_x, n_samples_y, n_vars_x, n_vars_y;
+    double** x = parse_csv("../test_data/x.csv", &n_samples_x, &n_vars_x);
+    double** y = parse_csv("../test_data/y.csv", &n_samples_y, &n_vars_y);
+    double* x1 = get_col(x, n_samples_x, n_vars_x, 1);
+    double* y2 = get_col(y, n_samples_y, n_vars_y, 2);
     
     return 0;
 }

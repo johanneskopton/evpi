@@ -80,11 +80,11 @@ def _calc_comparative_ev_pi(x, y, n_bins):
     return ev_pi
 
 
-def comparative_evpi(x, y, n_bins=None):
-    """Calculates EVPI for one estimate and one decision criterion.
-    EVPI means "Expected Value of Perfect Information" and can be described
-    as a measure for what a decision maker would be willing to pay for zero
-    uncertainty on a certain variable.
+def comparative_evppi(x, y, n_bins=None):
+    """Calculates EVPPI for one estimate and one decision criterion.
+    EVPI means "Expected Value of Perfect Parameter Information" and can be
+    described as a measure for what a decision maker would be willing to pay
+    for zero uncertainty on a certain variable.
 
     Parameters
     ----------
@@ -120,12 +120,12 @@ def comparative_evpi(x, y, n_bins=None):
     emv = np.max(ev)
 
     ev_pi = _calc_comparative_ev_pi(x, y, n_bins)
-    evpi = ev_pi - emv
+    evppi = ev_pi - emv
 
-    return evpi
+    return evppi
 
 
-def comparative_tevpi(y):
+def comparative_evpi(y):
     """Comparative total EVPI.
     Expected value of making always the best decision. If the model itself is
     deterministic, i.e. the only source of uncertainty are the input variables,
@@ -159,20 +159,20 @@ def comparative_tevpi(y):
     # mean and max are basically swapped
 
     # expected value of perfect information
-    tevpi = ev_pi - emv
+    evpi = ev_pi - emv
 
-    return tevpi
+    return evpi
 
 
-def comparative_multi_evpi(x, y, n_bins=None, significance_threshold=1e-3):
-    """Calculate evpi for multiple input variables and one output variable.
+def comparative_multi_evppi(x, y, n_bins=None, significance_threshold=1e-3):
+    """Calculate EVPPI for multiple input variables and one output variable.
 
     Parameters
     ----------
     x : 2D array_like
         Monte Carlo samples from the probability distribution of the
-        considered estimates or "input" variables. Columns are variables,
-        rows are samples.
+        considered parameter (aka estimates aka "input" variables). Columns
+        are variables, rows are samples.
     y : 2D array_like
         The respective utility (aka outcome) samples calculated using the
         estimate samples of x. This criterion is considered to be the (only)
@@ -190,16 +190,16 @@ def comparative_multi_evpi(x, y, n_bins=None, significance_threshold=1e-3):
     y = np.array(y)
 
     n_variables = x.shape[1]
-    evpi_results = np.zeros(n_variables)
-    tevpi_result = comparative_tevpi(y)
+    evppi_results = np.zeros(n_variables)
+    evpi_result = comparative_evpi(y)
     for i in range(n_variables):
-        this_evpi = comparative_evpi(x[:, i], y, n_bins)
+        this_evpi = comparative_evppi(x[:, i], y, n_bins)
 
         # Since this method tends to overestimate EVPIs, that are actually
         # zero, we want to test, if the EVPI is "significant" (not in the
         # sense of a statistical test).
-        if this_evpi < tevpi_result * significance_threshold:
+        if this_evpi < evpi_result * significance_threshold:
             this_evpi = 0
-        evpi_results[i] = this_evpi
+        evppi_results[i] = this_evpi
 
-    return evpi_results
+    return evppi_results

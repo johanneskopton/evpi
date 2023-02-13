@@ -84,7 +84,7 @@ for N_SAMPLES in n_sample_range:
 
     x = np.random.normal(MU_X, SIGMA_X, (N_SAMPLES, 3))
     y = utility(x)
-    numerical_evpi = comparative_evpi.comparative_multi_evpi(x, y)
+    numerical_evpi = comparative_evpi.comparative_multi_evppi(x, y)
 
     def rms(diff):
         return (np.sqrt(np.sum(diff*diff)))

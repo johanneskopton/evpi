@@ -26,6 +26,13 @@ SIGMA_X = np.array([8, 2, 15])
 x = np.random.normal(MU_X, SIGMA_X, (N_SAMPLES, 3))
 y = utility(x)
 
+fig, ax = plt.subplots(1, 2)
+ax[0].hist(x, bins=100, histtype="stepfilled", alpha=0.5)
+ax[1].hist(utility(x), bins=100, histtype="stepfilled", alpha=0.5)
+fig.tight_layout()
+plt.show()
+
+
 fig, ax = plt.subplots(3, 3, sharex=True, sharey=True)
 for i in range(3):
     for j in range(3):

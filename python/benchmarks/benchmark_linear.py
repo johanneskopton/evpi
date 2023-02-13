@@ -102,11 +102,3 @@ ax.set_ylabel("root mean square error of the 3 EVPPI values")
 ax.set_title(
     "benchmark on linear decision model\nwith 3 normally distributed parameters and 3 decision options")
 plt.show()
-# fig, ax = plt.subplots(1, 2)
-# ax[0].hist(x, bins=100, histtype="stepfilled", alpha=0.5)
-# ax[1].hist(utility(x), bins=100, histtype="stepfilled", alpha=0.5)
-# fig.tight_layout()
-# plt.show()
-
-# s = np.linspace(np.ones(3)*-5, np.ones(3)*5, 11)
-# print(s)

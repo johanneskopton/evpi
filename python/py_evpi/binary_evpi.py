@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def _calc_ev_pi(x, y, n_bins):
+def _calc_binary_ev_pi(x, y, n_bins):
     """Expected outcome given perfect information on x.
     Loops through the bins of a histogram over the input and calculated the sum
     of the respective output samples if positive, zero otherwise. This is then
@@ -79,7 +79,7 @@ def _calc_ev_pi(x, y, n_bins):
     return ev_pi
 
 
-def evppi(x, y, n_bins=None):
+def binary_evppi(x, y, n_bins=None):
     """Calculates EVPPI for one estimate and one decision criterion.
     EVPI means "Expected Value of Perfect Parameter Information" and can be
     described as a measure for what a decision maker would be willing to pay
@@ -122,7 +122,7 @@ def evppi(x, y, n_bins=None):
     emv = max(0, ev_yes)
 
     # expected value given perfect information on parameter
-    ev_pi = _calc_ev_pi(x, y, n_bins)
+    ev_pi = _calc_binary_ev_pi(x, y, n_bins)
 
     # expected value of perfect parameter information
     evppi = ev_pi - emv
@@ -130,7 +130,7 @@ def evppi(x, y, n_bins=None):
     return evppi
 
 
-def evpi(y):
+def binary_evpi(y):
     """Total EVPI.
     Expected value of making always the best decision. If the model itself is
     deterministic, i.e. the only source of uncertainty are the input variables,
@@ -163,7 +163,7 @@ def evpi(y):
     return evpi
 
 
-def multi_evppi(x, y, n_bins=None, significance_threshold=5e-2):
+def binary_multi_evppi(x, y, n_bins=None, significance_threshold=5e-2):
     """Calculate evppi for multiple input variables and one output variable.
 
     Parameters
@@ -190,9 +190,9 @@ def multi_evppi(x, y, n_bins=None, significance_threshold=5e-2):
 
     n_variables = x.shape[1]
     evppi_results = np.zeros(n_variables)
-    evpi_result = evpi(y)
+    evpi_result = binary_evpi(y)
     for i in range(n_variables):
-        this_evpi = evppi(x[:, i], y, n_bins)
+        this_evpi = binary_evppi(x[:, i], y, n_bins)
 
         # Since this method tends to overestimate EVPIs, that are actually
         # zero, we want to test, if the EVPI is "significant" (not in the

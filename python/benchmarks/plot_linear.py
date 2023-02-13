@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import scipy.stats
 import scipy.integrate
-from py_evpi import comparative_evpi
+from py_evpi import evpi
 plt.style.use("seaborn-whitegrid")
 
 COEFFICIENTS = np.array([[-2, 3, 0],

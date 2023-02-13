@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def _calc_comparative_ev_pi(x, y, n_bins):
+def _calc_ev_pi(x, y, n_bins):
     """Loops through the bins of a histogram over the input and returns the
     highest sum of the respective output samples.
 
@@ -80,7 +80,7 @@ def _calc_comparative_ev_pi(x, y, n_bins):
     return ev_pi
 
 
-def comparative_evppi(x, y, n_bins=None):
+def evppi(x, y, n_bins=None):
     """Calculates EVPPI for one estimate and one decision criterion.
     EVPI means "Expected Value of Perfect Parameter Information" and can be
     described as a measure for what a decision maker would be willing to pay
@@ -119,13 +119,13 @@ def comparative_evppi(x, y, n_bins=None):
     # expected maximum value
     emv = np.max(ev)
 
-    ev_pi = _calc_comparative_ev_pi(x, y, n_bins)
+    ev_pi = _calc_ev_pi(x, y, n_bins)
     evppi = ev_pi - emv
 
     return evppi
 
 
-def comparative_evpi(y):
+def evpi(y):
     """Comparative total EVPI.
     Expected value of making always the best decision. If the model itself is
     deterministic, i.e. the only source of uncertainty are the input variables,
@@ -164,7 +164,7 @@ def comparative_evpi(y):
     return evpi
 
 
-def comparative_multi_evppi(x, y, n_bins=None, significance_threshold=1e-3):
+def multi_evppi(x, y, n_bins=None, significance_threshold=1e-3):
     """Calculate EVPPI for multiple input variables and one output variable.
 
     Parameters
@@ -191,9 +191,9 @@ def comparative_multi_evppi(x, y, n_bins=None, significance_threshold=1e-3):
 
     n_variables = x.shape[1]
     evppi_results = np.zeros(n_variables)
-    evpi_result = comparative_evpi(y)
+    evpi_result = evpi(y)
     for i in range(n_variables):
-        this_evpi = comparative_evppi(x[:, i], y, n_bins)
+        this_evpi = evppi(x[:, i], y, n_bins)
 
         # Since this method tends to overestimate EVPIs, that are actually
         # zero, we want to test, if the EVPI is "significant" (not in the

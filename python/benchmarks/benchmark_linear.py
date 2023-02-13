@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import scipy.stats
 import scipy.integrate
-from py_evpi import comparative_evpi
+from py_evpi import evpi
 plt.style.use("seaborn-whitegrid")
 
 COEFFICIENTS = np.array([[-2, 3, 0],
@@ -84,7 +84,7 @@ for N_SAMPLES in n_sample_range:
 
     x = np.random.normal(MU_X, SIGMA_X, (N_SAMPLES, 3))
     y = utility(x)
-    numerical_evpi = comparative_evpi.comparative_multi_evppi(x, y)
+    numerical_evpi = evpi.multi_evppi(x, y)
 
     def rms(diff):
         return (np.sqrt(np.sum(diff*diff)))

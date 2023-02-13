@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import scipy.stats
 import scipy.integrate
-from py_evpi import evpi
+from py_evpi import evpi, regression_evpi
 plt.style.use("seaborn-whitegrid")
 
 COEFFICIENTS = np.array([[-2, 3, 0],
@@ -18,7 +18,8 @@ def utility(x):
 
 
 nested_error = []
-numerical_error = []
+binning_error = []
+regression_error = []
 n_sample_range = range(1000, 100000, 1000)
 
 for N_SAMPLES in n_sample_range:
@@ -83,18 +84,22 @@ for N_SAMPLES in n_sample_range:
 
     x = np.random.normal(MU_X, SIGMA_X, (N_SAMPLES, 3))
     y = utility(x)
-    numerical_evpi = evpi.multi_evppi(x, y)
+    binning_evpi = evpi.multi_evppi(x, y)
+    regression_evpi_res = regression_evpi.multi_evppi(x, y)
 
     def rms(diff):
         return (np.sqrt(np.sum(diff*diff)))
 
     nested_error.append(rms(true_evpi - nested_mc_evpi_res))
-    numerical_error.append(rms(true_evpi - numerical_evpi))
+    binning_error.append(rms(true_evpi - binning_evpi))
+    regression_error.append(rms(true_evpi - regression_evpi_res))
 
 fig, ax = plt.subplots(1)
 ax.plot(n_sample_range, nested_error, label="2-level nested MC")
-ax.plot(n_sample_range, numerical_error,
+ax.plot(n_sample_range, binning_error,
         label="1-level MC with binning")
+ax.plot(n_sample_range, regression_error,
+        label="1-level MC with regression")
 ax.legend()
 ax.set_xlabel("number of Monte Carlo samples")
 ax.set_ylabel("root mean square error of the 3 EVPPI values")

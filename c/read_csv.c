@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<string.h>
 #include<stdbool.h>
+#include "evpi.h"
 
 #define MAXCHAR 100
 
@@ -80,6 +81,9 @@ int main()
     double** y = parse_csv("../test_data/y.csv", &n_samples_y, &n_vars_y);
     double* x1 = get_col(x, n_samples_x, n_vars_x, 1);
     double* y2 = get_col(y, n_samples_y, n_vars_y, 2);
+    
+    double evpi_res = evpi(x1, y2, n_samples_x);
+    printf("%f\n", evpi_res);
     
     return 0;
 }

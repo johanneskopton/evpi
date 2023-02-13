@@ -9,6 +9,8 @@ plt.style.use("seaborn-whitegrid")
 COEFFICIENTS = np.array([[-2, 3, 0],
                          [5, -4, 0],
                          [0, -3, 2]])
+MU_X = np.array([4, 3, 6])
+SIGMA_X = np.array([8, 2, 15])
 
 
 def utility(x):
@@ -20,9 +22,6 @@ numerical_error = []
 n_sample_range = range(1000, 100000, 1000)
 
 for N_SAMPLES in n_sample_range:
-
-    MU_X = np.array([4, 3, 6])
-    SIGMA_X = np.array([8, 2, 15])
 
     def integral_evpi():
         # mathematical solution using intgration

@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def calc_ev_pi(x, y, n_bins):
+def _calc_ev_pi(x, y, n_bins):
     """Expected outcome given perfect information on x.
     Loops through the bins of a histogram over the input and calculated the sum
     of the respective output samples if positive, zero otherwise. This is then
@@ -122,7 +122,7 @@ def evpi(x, y, n_bins=None):
     emv = max(0, ev_yes)
 
     # expected value given perfect information on variable
-    ev_pi = calc_ev_pi(x, y, n_bins)
+    ev_pi = _calc_ev_pi(x, y, n_bins)
 
     # expected value of perfect information
     evpi = ev_pi - emv

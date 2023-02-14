@@ -34,7 +34,7 @@ for N_SAMPLES in n_sample_range:
 
         emv = np.max(scipy.integrate.quad_vec(emv_integrand, -500, 500)[0])
 
-        evpis = np.zeros(3)
+        evppis = np.zeros(3)
         for i in range(3):
             def inner(x_i):
                 mask = np.ones(3, dtype=bool)
@@ -52,11 +52,11 @@ for N_SAMPLES in n_sample_range:
             def ev_pi_integrand(x_i):
                 return inner(x_i) * scipy.stats.norm.pdf(x_i, MU_X[i], SIGMA_X[i])
             outer = scipy.integrate.quad(ev_pi_integrand, -500, 500)[0]
-            evpis[i] = outer-emv
-        return (evpis)
+            evppis[i] = outer-emv
+        return (evppis)
 
-    # true_evpi = integral_evpi()
-    true_evpi = np.array(
+    # true_evppis = integral_evpi()
+    true_evppis = np.array(
         [19.015078040998887, 2.769151803744485, 9.6341106463947])
 
     def nested_mc_evpi():
@@ -79,20 +79,20 @@ for N_SAMPLES in n_sample_range:
             evpis[i] = np.mean(E_inner_vec)-emv
         return evpis
 
-    nested_mc_evpi_res = nested_mc_evpi()
-    print(nested_mc_evpi_res)
+    nested_mc_evppi_res = nested_mc_evpi()
+    print(nested_mc_evppi_res)
 
     x = np.random.normal(MU_X, SIGMA_X, (N_SAMPLES, 3))
     y = utility(x)
-    binning_evpi = evpi.multi_evppi(x, y)
-    regression_evpi_res = regression_evpi.multi_evppi(x, y)
+    binning_evppi = evpi.multi_evppi(x, y)
+    regression_evppi_res = regression_evpi.multi_evppi(x, y)
 
     def rms(diff):
         return (np.sqrt(np.sum(diff*diff)))
 
-    nested_error.append(rms(true_evpi - nested_mc_evpi_res))
-    binning_error.append(rms(true_evpi - binning_evpi))
-    regression_error.append(rms(true_evpi - regression_evpi_res))
+    nested_error.append(rms(true_evppis - nested_mc_evppi_res))
+    binning_error.append(rms(true_evppis - binning_evppi))
+    regression_error.append(rms(true_evppis - regression_evppi_res))
 
 fig, ax = plt.subplots(1)
 ax.plot(n_sample_range, nested_error, label="2-level nested MC")

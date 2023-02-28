@@ -47,6 +47,27 @@ def integral_evppi():
     return (evppis)
 
 
+def nested_mc_evppi(n_samples):
+    n_samples_outer = int(np.sqrt(n_samples))
+    n_samples_inner = int(np.sqrt(n_samples))
+
+    evpis = np.zeros(3)
+    for i in range(3):
+        E_inner_vec = np.zeros(n_samples_outer)
+        all_samples = np.zeros((n_samples_outer * n_samples_inner, 3))
+        for outer_i in range(n_samples_outer):
+            x_i = p.x_i(i)
+            x = p.x(n_samples_inner)
+            x[:, i] = x_i
+            y = p.utility(x)
+            all_samples[outer_i *
+                        n_samples_inner:(outer_i+1)*n_samples_inner, :] = y
+            E_inner_vec[outer_i] = np.max(np.mean(y, axis=0))
+        emv = np.max(np.mean(all_samples, axis=0))
+        evpis[i] = np.mean(E_inner_vec)-emv
+    return evpis
+
+
 # true_evppis = integral_evppi()
 true_evppis = np.array(
     [19.015078040998887, 2.769151803744485, 9.6341106463947])
@@ -54,27 +75,7 @@ true_evppis = np.array(
 for j, N_SAMPLES in enumerate(n_sample_range):
     print(j)
 
-    def nested_mc_evppi():
-        N_SAMPLES_OUTER = int(np.sqrt(N_SAMPLES))
-        N_SAMPLES_INNER = int(np.sqrt(N_SAMPLES))
-
-        evpis = np.zeros(3)
-        for i in range(3):
-            E_inner_vec = np.zeros(N_SAMPLES_OUTER)
-            all_samples = np.zeros((N_SAMPLES_OUTER * N_SAMPLES_INNER, 3))
-            for outer_i in range(N_SAMPLES_OUTER):
-                x_i = np.random.normal(p.MU_X[i], p.SIGMA_X[i])
-                x = p.x(N_SAMPLES_INNER)
-                x[:, i] = x_i
-                y = p.utility(x)
-                all_samples[outer_i *
-                            N_SAMPLES_INNER:(outer_i+1)*N_SAMPLES_INNER, :] = y
-                E_inner_vec[outer_i] = np.max(np.mean(y, axis=0))
-            emv = np.max(np.mean(all_samples, axis=0))
-            evpis[i] = np.mean(E_inner_vec)-emv
-        return evpis
-
-    nested_mc_evppi_res = nested_mc_evppi()
+    nested_mc_evppi_res = nested_mc_evppi(N_SAMPLES)
 
     x = p.x(N_SAMPLES)
     y = p.y()

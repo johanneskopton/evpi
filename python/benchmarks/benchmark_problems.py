@@ -17,6 +17,9 @@ class LinearBenchmarkProblem:
         self._x = np.random.normal(self.MU_X, self.SIGMA_X, (N_SAMPLES, 3))
         return self._x
 
+    def x_i(self, i):
+        return np.random.normal(self.MU_X[i], self.SIGMA_X[i])
+
     def y(self):
         if self._x is None:
             raise ValueError("Cannot calculate y without x.")

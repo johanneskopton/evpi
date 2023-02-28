@@ -2,10 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from py_evpi import evpi, regression_evpi
 
-from benchmark_problems import LinearBenchmarkProblem
+from benchmark_problems import NonlinearBenchmarkProblem
 plt.style.use("seaborn-v0_8-whitegrid")
 
-p = LinearBenchmarkProblem()
+p = NonlinearBenchmarkProblem()
 
 nested_error = []
 binning_error = []
@@ -34,7 +34,7 @@ def nested_mc_evppi(n_samples):
 
 
 # true_evppis = nested_mc_evppi(5e8)
-true_evppis = np.array([18.98287773, 2.71079159, 9.63641548])
+true_evppis = np.array([[7.12395239, 2.31112576, 9.91058064]])
 
 for j, N_SAMPLES in enumerate(n_sample_range):
     print(j)

@@ -5,7 +5,7 @@ MYDIR=build
 all: main
 
 main: mkdir read_csv.o evpi.o
-	$(CC) $(CFLAGS) -o build/read_csv build/read_csv.o build/evpi.o
+	$(CC) $(CFLAGS) -o build/read_csv build/read_csv.o build/evpi.o -lm
 
 mkdir:
 	[ -d $(MYDIR) ] || mkdir -p $(MYDIR)

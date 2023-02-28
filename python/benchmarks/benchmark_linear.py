@@ -2,8 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats
 import scipy.integrate
-from py_evpi import evpi, regression_evpi
+from py_evpi import evpi
 
+import regression_evpi
 from benchmark_problems import LinearBenchmarkProblem
 plt.style.use("seaborn-v0_8-whitegrid")
 

@@ -1,10 +1,6 @@
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
-import scipy.stats
-import scipy.integrate
-from py_evpi import evpi
-plt.style.use("seaborn-whitegrid")
+plt.style.use("seaborn-v0_8-whitegrid")
 
 COEFFICIENTS = np.array([[-2, 3, 0],
                          [5, -4, 0],

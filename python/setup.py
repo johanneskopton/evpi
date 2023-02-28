@@ -29,7 +29,12 @@ setup(
     extras_require={
         "dev": [
             "autopep8",
-            "flake8"
+            "flake8",
+            "matplotlib>3.6",
+            "pandas",
+            "scipy",
+            "pygam >= 0.8",
+            "numpy < 1.24"  # for pygam
         ],
     },
 )

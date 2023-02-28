@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import scipy.stats
 import scipy.integrate
 from py_evpi import evpi, regression_evpi
-plt.style.use("seaborn-whitegrid")
+plt.style.use("seaborn-v0_8-whitegrid")
 
 COEFFICIENTS = np.array([[-2, 3, 0],
                          [5, -4, 0],

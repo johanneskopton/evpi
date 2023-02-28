@@ -56,7 +56,7 @@ double** get_vals(FILE *fp, size_t n_samples, size_t n_vars)
 
 double* get_col(double** matrix, size_t n_samples, size_t n_vars, size_t col_idx)
 {
-    double *column = malloc(n_samples * sizeof(double));
+    double* column = malloc(n_samples * sizeof(double));
     for(size_t i=0; i<n_samples; i++){
         column[i] = matrix[i][col_idx];
     }

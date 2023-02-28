@@ -19,7 +19,7 @@ def utility(x):
 nested_error = []
 binning_error = []
 regression_error = []
-n_sample_range = range(1000, 100000, 1000)
+n_sample_range = range(1000, 50000, 1000)
 
 for N_SAMPLES in n_sample_range:
 

@@ -21,44 +21,47 @@ binning_error = []
 regression_error = []
 n_sample_range = range(1000, 50000, 1000)
 
-for N_SAMPLES in n_sample_range:
 
-    def integral_evpi():
-        # mathematical solution using intgration
-        mu_y = COEFFICIENTS @ MU_X
-        sigma_y = np.sqrt((COEFFICIENTS*COEFFICIENTS) @ (SIGMA_X*SIGMA_X))
+def integral_evppi():
+    # mathematical solution using intgration
+    mu_y = COEFFICIENTS @ MU_X
+    sigma_y = np.sqrt((COEFFICIENTS*COEFFICIENTS) @ (SIGMA_X*SIGMA_X))
 
-        def emv_integrand(s):
-            return scipy.stats.norm.pdf(s, mu_y, sigma_y) * s
+    def emv_integrand(s):
+        return scipy.stats.norm.pdf(s, mu_y, sigma_y) * s
 
-        emv = np.max(scipy.integrate.quad_vec(emv_integrand, -500, 500)[0])
+    emv = np.max(scipy.integrate.quad_vec(emv_integrand, -500, 500)[0])
 
-        evppis = np.zeros(3)
-        for i in range(3):
-            def inner(x_i):
-                mask = np.ones(3, dtype=bool)
-                mask[i] = False
-                mu_i = COEFFICIENTS[:, mask] @ MU_X[mask] + \
-                    COEFFICIENTS[:, i] * x_i
-                sigma_i = np.sqrt(
-                    (COEFFICIENTS[:, mask]*COEFFICIENTS[:, mask]) @ (SIGMA_X[mask]*SIGMA_X[mask]))
+    evppis = np.zeros(3)
+    for i in range(3):
+        def inner(x_i):
+            mask = np.ones(3, dtype=bool)
+            mask[i] = False
+            mu_i = COEFFICIENTS[:, mask] @ MU_X[mask] + \
+                COEFFICIENTS[:, i] * x_i
+            sigma_i = np.sqrt(
+                (COEFFICIENTS[:, mask]*COEFFICIENTS[:, mask]) @ (SIGMA_X[mask]*SIGMA_X[mask]))
 
-                def y_ev_pi(s):
-                    return scipy.stats.norm.pdf(s, mu_i, sigma_i) * s
+            def y_ev_pi(s):
+                return scipy.stats.norm.pdf(s, mu_i, sigma_i) * s
 
-                return np.max(scipy.integrate.quad_vec(y_ev_pi, -500, 500)[0])
+            return np.max(scipy.integrate.quad_vec(y_ev_pi, -500, 500)[0])
 
-            def ev_pi_integrand(x_i):
-                return inner(x_i) * scipy.stats.norm.pdf(x_i, MU_X[i], SIGMA_X[i])
-            outer = scipy.integrate.quad(ev_pi_integrand, -500, 500)[0]
-            evppis[i] = outer-emv
-        return (evppis)
+        def ev_pi_integrand(x_i):
+            return inner(x_i) * scipy.stats.norm.pdf(x_i, MU_X[i], SIGMA_X[i])
+        outer = scipy.integrate.quad(ev_pi_integrand, -500, 500)[0]
+        evppis[i] = outer-emv
+    return (evppis)
 
-    # true_evppis = integral_evpi()
-    true_evppis = np.array(
-        [19.015078040998887, 2.769151803744485, 9.6341106463947])
 
-    def nested_mc_evpi():
+# true_evppis = integral_evppi()
+true_evppis = np.array(
+    [19.015078040998887, 2.769151803744485, 9.6341106463947])
+
+for j, N_SAMPLES in enumerate(n_sample_range):
+    print(j)
+
+    def nested_mc_evppi():
         N_SAMPLES_OUTER = int(np.sqrt(N_SAMPLES))
         N_SAMPLES_INNER = int(np.sqrt(N_SAMPLES))
 
@@ -78,8 +81,7 @@ for N_SAMPLES in n_sample_range:
             evpis[i] = np.mean(E_inner_vec)-emv
         return evpis
 
-    nested_mc_evppi_res = nested_mc_evpi()
-    print(nested_mc_evppi_res)
+    nested_mc_evppi_res = nested_mc_evppi()
 
     x = np.random.normal(MU_X, SIGMA_X, (N_SAMPLES, 3))
     y = utility(x)

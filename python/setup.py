@@ -34,7 +34,8 @@ setup(
             "pandas",
             "scipy",
             "pygam >= 0.8",
-            "numpy < 1.24"  # for pygam
+            "numpy < 1.24",  # for pygam
+            "pytest"
         ],
     },
 )

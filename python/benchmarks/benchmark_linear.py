@@ -3,18 +3,11 @@ import matplotlib.pyplot as plt
 import scipy.stats
 import scipy.integrate
 from py_evpi import evpi, regression_evpi
+
+from benchmark_problems import LinearBenchmarkProblem
 plt.style.use("seaborn-v0_8-whitegrid")
 
-COEFFICIENTS = np.array([[-2, 3, 0],
-                         [5, -4, 0],
-                         [0, -3, 2]])
-MU_X = np.array([4, 3, 6])
-SIGMA_X = np.array([8, 2, 15])
-
-
-def utility(x):
-    return (COEFFICIENTS @ x.T).T
-
+p = LinearBenchmarkProblem()
 
 nested_error = []
 binning_error = []
@@ -24,8 +17,8 @@ n_sample_range = range(1000, 50000, 1000)
 
 def integral_evppi():
     # mathematical solution using intgration
-    mu_y = COEFFICIENTS @ MU_X
-    sigma_y = np.sqrt((COEFFICIENTS*COEFFICIENTS) @ (SIGMA_X*SIGMA_X))
+    mu_y = p.COEFFICIENTS @ p.MU_X
+    sigma_y = np.sqrt((p.COEFFICIENTS*p.COEFFICIENTS) @ (p.SIGMA_X*p.SIGMA_X))
 
     def emv_integrand(s):
         return scipy.stats.norm.pdf(s, mu_y, sigma_y) * s
@@ -37,10 +30,10 @@ def integral_evppi():
         def inner(x_i):
             mask = np.ones(3, dtype=bool)
             mask[i] = False
-            mu_i = COEFFICIENTS[:, mask] @ MU_X[mask] + \
-                COEFFICIENTS[:, i] * x_i
+            mu_i = p.COEFFICIENTS[:, mask] @ p.MU_X[mask] + \
+                p.COEFFICIENTS[:, i] * x_i
             sigma_i = np.sqrt(
-                (COEFFICIENTS[:, mask]*COEFFICIENTS[:, mask]) @ (SIGMA_X[mask]*SIGMA_X[mask]))
+                (p.COEFFICIENTS[:, mask]*p.COEFFICIENTS[:, mask]) @ (p.SIGMA_X[mask]*p.SIGMA_X[mask]))
 
             def y_ev_pi(s):
                 return scipy.stats.norm.pdf(s, mu_i, sigma_i) * s
@@ -48,7 +41,7 @@ def integral_evppi():
             return np.max(scipy.integrate.quad_vec(y_ev_pi, -500, 500)[0])
 
         def ev_pi_integrand(x_i):
-            return inner(x_i) * scipy.stats.norm.pdf(x_i, MU_X[i], SIGMA_X[i])
+            return inner(x_i) * scipy.stats.norm.pdf(x_i, p.MU_X[i], p.SIGMA_X[i])
         outer = scipy.integrate.quad(ev_pi_integrand, -500, 500)[0]
         evppis[i] = outer-emv
     return (evppis)
@@ -70,10 +63,10 @@ for j, N_SAMPLES in enumerate(n_sample_range):
             E_inner_vec = np.zeros(N_SAMPLES_OUTER)
             all_samples = np.zeros((N_SAMPLES_OUTER * N_SAMPLES_INNER, 3))
             for outer_i in range(N_SAMPLES_OUTER):
-                x_i = np.random.normal(MU_X[i], SIGMA_X[i])
-                x = np.random.normal(MU_X, SIGMA_X, (N_SAMPLES_INNER, 3))
+                x_i = np.random.normal(p.MU_X[i], p.SIGMA_X[i])
+                x = p.x(N_SAMPLES_INNER)
                 x[:, i] = x_i
-                y = utility(x)
+                y = p.utility(x)
                 all_samples[outer_i *
                             N_SAMPLES_INNER:(outer_i+1)*N_SAMPLES_INNER, :] = y
                 E_inner_vec[outer_i] = np.max(np.mean(y, axis=0))
@@ -83,8 +76,8 @@ for j, N_SAMPLES in enumerate(n_sample_range):
 
     nested_mc_evppi_res = nested_mc_evppi()
 
-    x = np.random.normal(MU_X, SIGMA_X, (N_SAMPLES, 3))
-    y = utility(x)
+    x = p.x(N_SAMPLES)
+    y = p.y()
     binning_evppi = evpi.multi_evppi(x, y)
     regression_evppi_res = regression_evpi.multi_evppi(x, y)
 

@@ -5,10 +5,10 @@ import scipy.integrate
 from py_evpi import evpi
 
 import regression_evpi
-from benchmark_problems import LinearBenchmarkProblem
+from benchmark_problems import LinearBenchmarkProblem1
 plt.style.use("seaborn-v0_8-whitegrid")
 
-p = LinearBenchmarkProblem()
+p = LinearBenchmarkProblem1()
 
 nested_error = []
 binning_error = []

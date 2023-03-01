@@ -27,6 +27,16 @@ double* mean_samples(double** matrix, size_t n_samples, size_t n_vars){
     return result;
 }
 
+double maximum(double* vector, size_t length){
+    double result = vector[0];
+    for (size_t i = 1; i<length; i++){
+        if (vector[i] > result){
+            result = vector[i];
+        }
+    }
+    return result;
+}
+
 double evppi(double* x, double** y, size_t n_samples, size_t n_options){
     /*
     Check if there is variance (-> uncertainty) in the input.
@@ -39,6 +49,7 @@ double evppi(double* x, double** y, size_t n_samples, size_t n_options){
     // Use cubic root of sample number as default bin number.
     unsigned int n_bins = (unsigned int)cbrt(n_samples);
     
-    double* ev = mean_samples(y, n_samples, n_options);
+    // expected maximum value
+    double emv = maximum(mean_samples(y, n_samples, n_options), n_options);
     return 1;
 }

@@ -1,4 +1,5 @@
 import numpy as np
+# import matplotlib.pyplot as plt
 from pygam import LinearGAM, s
 
 
@@ -10,6 +11,9 @@ def evppi(x, y):
         gam = LinearGAM(s(0)).fit(x, y[:, i])
         yy[:, i] = gam.predict(x)
 
+    # plt.scatter(x, y[:, 0])
+    # plt.scatter(x, yy[:, 0])
+    # plt.show()
     evpi = np.mean(np.max(yy, axis=1)) - np.max(np.mean(yy, axis=0))
     return evpi
 

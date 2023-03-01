@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 from py_evpi import evpi
 
 import regression_evpi
@@ -12,6 +13,11 @@ p = NonlinearBenchmarkProblem()
 nested_error = []
 binning_error = []
 regression_error = []
+
+nested_time = 0
+binning_time = 0
+regression_time = 0
+
 n_sample_range = range(1000, 50000, 1000)
 
 
@@ -41,12 +47,20 @@ true_evppis = np.array([[7.12395239, 2.31112576, 9.91058064]])
 for j, N_SAMPLES in enumerate(n_sample_range):
     print(j)
 
+    timer = time.time()
     nested_mc_evppi_res = nested_mc_evppi(N_SAMPLES)
+    nested_time += time.time() - timer
 
     x = p.x(N_SAMPLES)
     y = p.y()
+
+    timer = time.time()
     binning_evppi = evpi.multi_evppi(x, y)
+    binning_time += time.time() - timer
+
+    timer = time.time()
     regression_evppi_res = regression_evpi.multi_evppi(x, y)
+    regression_time += time.time() - timer
 
     def rms(diff):
         return (np.sqrt(np.sum(diff*diff)))
@@ -56,11 +70,12 @@ for j, N_SAMPLES in enumerate(n_sample_range):
     regression_error.append(rms(true_evppis - regression_evppi_res))
 
 fig, ax = plt.subplots(1)
-ax.plot(n_sample_range, nested_error, label="2-level nested MC")
+ax.plot(n_sample_range, nested_error,
+        label="2-level nested MC ({:.2f} s)".format(nested_time))
 ax.plot(n_sample_range, binning_error,
-        label="1-level MC with binning")
+        label="1-level MC with binning ({:.2f} s)".format(binning_time))
 ax.plot(n_sample_range, regression_error,
-        label="1-level MC with regression")
+        label="1-level MC with regression ({:.2f} s)".format(regression_time))
 ax.legend()
 ax.set_xlabel("number of Monte Carlo samples")
 ax.set_ylabel("root mean square error of the 3 EVPPI values")

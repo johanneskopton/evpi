@@ -8,7 +8,7 @@ def evppi(x, y):
     yy = np.zeros(y.shape)
     for i in range(y.shape[1]):
         gam = LinearGAM(s(0)).fit(x, y[:, i])
-        yy[:, i] = gam.partial_dependence(0, x)
+        yy[:, i] = gam.predict(x)
 
     evpi = np.mean(np.max(yy, axis=1)) - np.max(np.mean(yy, axis=0))
     return evpi

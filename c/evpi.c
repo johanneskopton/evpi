@@ -19,7 +19,7 @@ double* mean_samples(double** matrix, size_t n_samples, size_t n_vars) {
     for (size_t j = 0; j < n_vars; j++) {
         double sum = 0;
         for (size_t i = 0; i < n_samples; i++) {
-            sum += matrix[i][j];
+            sum += matrix[j][i];
         }
         result[j] = sum / n_samples;
     }
@@ -30,10 +30,10 @@ double* max_vars(double** matrix, size_t n_samples, size_t n_vars) {
     double* result = malloc(n_samples * sizeof(double));
     double max_val;
     for (size_t i = 0; i < n_samples; i++) {
-        max_val = matrix[i][0];
+        max_val = matrix[0][i];
         for (size_t j = 1; j < n_vars; j++) {
-            if (matrix[i][j] > max_val) {
-                max_val = matrix[i][j];
+            if (matrix[j][i] > max_val) {
+                max_val = matrix[j][i];
             }
         }
         result[i] = max_val;
@@ -81,12 +81,13 @@ double* get_histogram_bins(double* vector, size_t length, unsigned int n_bins) {
     return result;
 }
 
-double* get_col(double** matrix, size_t n_samples, size_t col_idx) {
-    double* column = malloc(n_samples * sizeof(double));
-    for (size_t i = 0; i < n_samples; i++) {
-        column[i] = matrix[i][col_idx];
-    }
-    return column;
+double* get_row(double** matrix, size_t n_samples, size_t row_idx) {
+    return matrix[row_idx];
+    // double* column = malloc(n_samples * sizeof(double));
+    // for (size_t i = 0; i < n_samples; i++) {
+    //     column[i] = matrix[i][col_idx];
+    // }
+    // return column;
 }
 
 double calc_ev_pi(double* x, double** y, size_t n_samples, size_t n_options,
@@ -114,7 +115,7 @@ double calc_ev_pi(double* x, double** y, size_t n_samples, size_t n_options,
             }
             // if in bin iterate over decision options
             for (size_t option_i = 0; option_i < n_options; option_i++) {
-                y_subset_sum[option_i] += y[sample_i][option_i];
+                y_subset_sum[option_i] += y[option_i][sample_i];
             }
         }
         sum_res += maximum(y_subset_sum, n_options);
@@ -152,7 +153,7 @@ double* multi_evppi(double** x, double** y, size_t n_samples,
     double* x_var;
     double* evppi_val = malloc(n_variables * sizeof(double));
     for (size_t variable_i = 0; variable_i < n_variables; variable_i++) {
-        x_var = get_col(x, n_samples, variable_i);
+        x_var = get_row(x, n_samples, variable_i);
         evppi_val[variable_i] = evppi(x_var, y, n_samples, n_options);
         if (evppi_val[variable_i] < evpi_val * threshold)
             evppi_val[variable_i] = 0;

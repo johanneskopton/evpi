@@ -26,15 +26,14 @@ def evppi(x, y):
     evppi : float
         Expected Value of Perfect Parameter Information
     """
-    x = np.array(x, dtype=np.float64)
-    y = np.array(y, dtype=np.float64)
+    x = np.asfortranarray(x, dtype=float)
+    y = np.asfortranarray(y, dtype=float)
 
     xx = ffi.cast("double *", x.ctypes.data)
 
-    yy = ffi.new("double* [%d]" % (y.shape[0]))
-    y_list = [np.array(y_row, dtype=np.float64) for y_row in y]
-    for i in range(y.shape[0]):
-        yy[i] = ffi.cast("double *", y_list[i].ctypes.data)
+    yy = ffi.new("double* [%d]" % (y.shape[1]))
+    for i in range(y.shape[1]):
+        yy[i] = ffi.cast("double *", y[:, i].ctypes.data)
 
     res = lib.evppi(xx,
                     yy,
@@ -60,12 +59,11 @@ def evpi(y):
         the option with the highest expected utility. Samples are rows,
         decision options are columns.
     """
-    y = np.array(y, dtype=np.float64)
+    y = np.asfortranarray(y, dtype=float)
 
-    yy = ffi.new("double* [%d]" % (y.shape[0]))
-    y_list = [np.array(y_row, dtype=np.float64) for y_row in y]
-    for i in range(y.shape[0]):
-        yy[i] = ffi.cast("double *", y_list[i].ctypes.data)
+    yy = ffi.new("double* [%d]" % (y.shape[1]))
+    for i in range(y.shape[1]):
+        yy[i] = ffi.cast("double *", y[:, i].ctypes.data)
 
     res = lib.evpi(yy,
                    y.shape[0],
@@ -96,16 +94,16 @@ def multi_evppi(x, y, n_bins=None, significance_threshold=1e-3):
         zero, since really small positive values are mostly numerical
         artifacts.
     """
-    x = np.array(x)
-    y = np.array(y)
+    x = np.asfortranarray(x, dtype=float)
+    y = np.asfortranarray(y, dtype=float)
 
-    xx = ffi.new("double* [%d]" % (x.shape[0]))
-    yy = ffi.new("double* [%d]" % (y.shape[0]))
-    x_list = [np.array(x_row, dtype=np.float64) for x_row in x]
-    y_list = [np.array(y_row, dtype=np.float64) for y_row in y]
-    for i in range(x.shape[0]):
-        xx[i] = ffi.cast("double *", x_list[i].ctypes.data)
-        yy[i] = ffi.cast("double *", y_list[i].ctypes.data)
+    xx = ffi.new("double* [%d]" % (x.shape[1]))
+    yy = ffi.new("double* [%d]" % (y.shape[1]))
+    for i in range(x.shape[1]):
+        xx[i] = ffi.cast("double *", x[:, i].ctypes.data)
+
+    for i in range(y.shape[1]):
+        yy[i] = ffi.cast("double *", y[:, i].ctypes.data)
 
     res_cdata = lib.multi_evppi(xx,
                                 yy,

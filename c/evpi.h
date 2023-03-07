@@ -13,14 +13,14 @@
     ----------
     x : 1D array
         Monte Carlo samples from the probability distribution of the
-        considered estimates or "input" variables. Samples are rows,
-        variables are columns.
+        considered estimates or "input" variables. Samples are columns,
+        variables are rows(!).
     y : 2D array
         The respective utility (aka outcome) samples calculated using the
         estimate samples of x. This criterion is considered to be the (only)
         decision criterion for a risk-neutral decision maker, that chooses
-        the option with the highest expected utility. Samples are rows,
-        decision options are columns.
+        the option with the highest expected utility. Samples are columns,
+        decision options are rows(!).
 */
 double evppi(double* x, double** y, size_t n_samples, size_t n_options);
 
@@ -31,14 +31,14 @@ double evppi(double* x, double** y, size_t n_samples, size_t n_options);
     ----------
     x : 2D array_like
         Monte Carlo samples from the probability distribution of the considered
-        parameter(aka estimates aka "input" variables). Columns are variables,
-        rows are samples.
+        parameter(aka estimates aka "input" variables). Rows are variables,
+        columns are samples(!).
     y : 2D array_like
         The respective utility(aka outcome) samples calculated using the
         estimate samples of x. This criterion is considered to be the(only)
         decision criterion for a risk-neutral decision maker, that chooses the
-        option with the highest expected utility. Samples are rows, decision
-        options are columns.
+        option with the highest expected utility. Samples are columns, decision
+        options are rows(!).
     threshold : float
         Percentage of the total EVPI, below which EVPI values will be set to
         zero, since really small positive values are mostly numerical
@@ -60,8 +60,8 @@ double* multi_evppi(double** x, double** y, size_t n_samples,
         The respective utility (aka outcome) samples calculated using the
         estimate samples of x. This criterion is considered to be the (only)
         decision criterion for a risk-neutral decision maker, that chooses
-        the option with the highest expected utility. Samples are rows,
-        decision options are columns.
+        the option with the highest expected utility. Samples are columns,
+        decision options are rows(!).
 */
 double evpi(double** y, size_t n_samples, size_t n_options);
 

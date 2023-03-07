@@ -72,7 +72,7 @@ def evpi(y):
     return res
 
 
-def multi_evppi(x, y, n_bins=None, significance_threshold=1e-3):
+def multi_evppi(x, y, significance_threshold=1e-3):
     """Calculate EVPPI for multiple input variables and one output variable.
 
     Parameters
@@ -87,8 +87,6 @@ def multi_evppi(x, y, n_bins=None, significance_threshold=1e-3):
         decision criterion for a risk-neutral decision maker, that chooses
         the option with the highest expected utility. Samples are rows,
         decision options are columns.
-    n_bins : int
-        Number of non-empty bins to use for the histogram.
     significance_threshold : float
         Percentage of the total EVPI, below which EVPI values will be set to
         zero, since really small positive values are mostly numerical

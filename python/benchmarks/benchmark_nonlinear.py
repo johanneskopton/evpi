@@ -90,5 +90,6 @@ ax.legend()
 ax.set_xlabel("number of Monte Carlo samples")
 ax.set_ylabel("root mean square error of the 3 EVPPI values")
 ax.set_title(
-    "benchmark on nonlinear decision model\nwith 3 normally distributed parameters and 3 decision options")
+    "benchmark on nonlinear decision model\nwith 3 normally distributed\
+        parameters and 3 decision options")
 plt.show()

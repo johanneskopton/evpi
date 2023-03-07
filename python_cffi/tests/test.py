@@ -11,8 +11,8 @@ y = pd.read_csv("../test_data/y.csv", index_col=0)
 atol = 0.5
 
 
-# def test_evpi():
-#     assert np.isclose(evpi.evpi(y), 17.7, atol=atol)
+def test_evpi():
+    assert np.isclose(evpi.evpi(y), 17.7, atol=atol)
 
 
 def test_evppi():
@@ -21,8 +21,8 @@ def test_evppi():
     assert np.isclose(evpi.evppi(x.x3, y), 9.9, atol=atol)
 
 
-# def test_multi_evppi():
-#     assert np.allclose(evpi.multi_evppi(x, y), [7.1, 2.3, 9.9], atol=atol)
+def test_multi_evppi():
+    assert np.allclose(evpi.multi_evppi(x, y), [7.1, 2.3, 9.9], atol=atol)
 
 
 # def test_binary_evpi():

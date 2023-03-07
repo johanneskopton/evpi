@@ -81,14 +81,7 @@ double* get_histogram_bins(double* vector, size_t length, unsigned int n_bins) {
     return result;
 }
 
-double* get_row(double** matrix, size_t n_samples, size_t row_idx) {
-    return matrix[row_idx];
-    // double* column = malloc(n_samples * sizeof(double));
-    // for (size_t i = 0; i < n_samples; i++) {
-    //     column[i] = matrix[i][col_idx];
-    // }
-    // return column;
-}
+double* get_row(double** matrix, size_t row_idx) { return matrix[row_idx]; }
 
 double calc_ev_pi(double* x, double** y, size_t n_samples, size_t n_options,
                   unsigned int n_bins) {
@@ -153,7 +146,7 @@ double* multi_evppi(double** x, double** y, size_t n_samples,
     double* x_var;
     double* evppi_val = malloc(n_variables * sizeof(double));
     for (size_t variable_i = 0; variable_i < n_variables; variable_i++) {
-        x_var = get_row(x, n_samples, variable_i);
+        x_var = get_row(x, variable_i);
         evppi_val[variable_i] = evppi(x_var, y, n_samples, n_options);
         if (evppi_val[variable_i] < evpi_val * threshold)
             evppi_val[variable_i] = 0;

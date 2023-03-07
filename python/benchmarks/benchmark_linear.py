@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import scipy.stats
 import scipy.integrate
 import time
-from py_evpi import evpi
+from py_evpi import multi_evppi
 
 import regression_evpi
 from benchmark_problems import LinearBenchmarkProblem1
@@ -90,7 +90,7 @@ for j, N_SAMPLES in enumerate(n_sample_range):
     y = p.y()
 
     timer = time.time()
-    binning_evppi = evpi.multi_evppi(x, y)
+    binning_evppi = multi_evppi(x, y)
     binning_time += time.time() - timer
 
     timer = time.time()

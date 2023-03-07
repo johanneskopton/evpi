@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-import py_evpi.evpi
-import evpi_cffi.evpi
 
+import py_evpi
+import evpi_cffi
 import regression_evpi
 from benchmark_problems import NonlinearBenchmarkProblem
 
@@ -58,11 +58,11 @@ for j, N_SAMPLES in enumerate(n_sample_range):
     y = p.y()
 
     timer = time.time()
-    binning_evppi = py_evpi.evpi.multi_evppi(x, y)
+    binning_evppi = py_evpi.multi_evppi(x, y)
     binning_time += time.time() - timer
 
     timer = time.time()
-    binning_evppi_c = evpi_cffi.evpi.multi_evppi(x, y)
+    binning_evppi_c = evpi_cffi.multi_evppi(x, y)
     binning_time_c += time.time() - timer
 
     timer = time.time()

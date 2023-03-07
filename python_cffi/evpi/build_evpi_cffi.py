@@ -9,13 +9,13 @@ double* multi_evppi(double** x, double** y, size_t n_samples,
 double evpi(double** y, size_t n_samples, size_t n_options);
 """)
 
-ffibuilder.set_source("_evpi_cffi",
+ffibuilder.set_source("_evpi",
                       """
                       #include "evpi.h"
                       """,
-                      sources=["evpi_cffi/evpi.c"],
+                      sources=["evpi/evpi.c"],
                       libraries=["m"],
-                      include_dirs=["evpi_cffi"])
+                      include_dirs=["evpi"])
 
 if __name__ == "__main__":
     ffibuilder.compile(verbose=True)

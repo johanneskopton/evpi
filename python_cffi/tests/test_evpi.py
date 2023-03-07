@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from evpi_cffi import evpi, evppi, multi_evppi
+from evpi import evpi, evppi, multi_evppi
 
 x = pd.read_csv("../test_data/x.csv", index_col=0)
 y = pd.read_csv("../test_data/y.csv", index_col=0)

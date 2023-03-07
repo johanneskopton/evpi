@@ -1,6 +1,6 @@
 import numpy as np
 
-from _evpi_cffi import ffi, lib
+from _evpi import ffi, lib
 
 
 def evppi(x, y):

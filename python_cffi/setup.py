@@ -7,19 +7,19 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 
-evpi_module = Extension("evpi_cffi",
-                        sources=["evpi_cffi/evpi.c"],
-                        include_dirs=['evpi_cffi'])
+evpi_module = Extension("evpi",
+                        sources=["evpi/evpi.c"],
+                        include_dirs=['evpi'])
 
 setup(
-    name="evpi_cffi",
+    name="evpi",
     version="0.1.0",
     author="Johannes Kopton",
     author_email="johannes@kopton.org",
     description=("Python wrapper for EVPI implementation in C."),
     keywords="bayesian information economics value decision analysis",
     url="https://github.com/johanneskopton/evpi",
-    packages=["evpi_cffi"],
+    packages=["evpi"],
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
     classifiers=[
@@ -42,5 +42,5 @@ setup(
         ],
     },
     # ext_modules=[evpi_module],
-    cffi_modules=["evpi_cffi/build_evpi_cffi.py:ffibuilder"],
+    cffi_modules=["evpi/build_evpi_cffi.py:ffibuilder"],
 )

@@ -1,4 +1,5 @@
 #include "evpi.h"
+#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,9 +28,9 @@ unsigned int count_vars(FILE* fp) {
 double** get_vals(FILE* fp, size_t n_samples, size_t n_vars) {
     // set up 2d array as pointer of pointers
     double* data = malloc(n_samples * n_vars * sizeof(double));
-    double** result = malloc(n_samples * sizeof(double*));
-    for (size_t i = 0; i < n_samples; i++)
-        result[i] = data + i * n_vars;
+    double** result = malloc(n_vars * sizeof(double*));
+    for (size_t i = 0; i < n_vars; i++)
+        result[i] = data + i * n_samples;
 
     // parse csv into this array
     char row[MAXCHAR];
@@ -43,22 +44,13 @@ double** get_vals(FILE* fp, size_t n_samples, size_t n_vars) {
         token = strtok(NULL, ","); // skip first col (index)
         j = 0;
         while (token != NULL) {
-            result[i][j] = atof(token);
+            result[j][i] = atof(token);
             token = strtok(NULL, ",");
             j++;
         }
         i++;
     }
     return result;
-}
-
-double* get_col(double** matrix, size_t n_samples, size_t n_vars,
-                size_t col_idx) {
-    double* column = malloc(n_samples * sizeof(double));
-    for (size_t i = 0; i < n_samples; i++) {
-        column[i] = matrix[i][col_idx];
-    }
-    return column;
 }
 
 double** parse_csv(char* path, size_t* n_samples, size_t* n_vars) {
@@ -75,11 +67,22 @@ int main() {
     size_t n_samples_x, n_samples_y, n_vars_x, n_vars_y;
     double** x = parse_csv("../test_data/x.csv", &n_samples_x, &n_vars_x);
     double** y = parse_csv("../test_data/y.csv", &n_samples_y, &n_vars_y);
-    double* x1 = get_col(x, n_samples_x, n_vars_x, 1);
-    // double* y2 = get_col(y, n_samples_y, n_vars_y, 2);
 
-    double evpi_res = evppi(x1, y, n_samples_x, n_vars_y);
-    printf("%f\n", evpi_res);
+    double* xvar;
+    double evppi_res;
+    double reference_evppi[3] = {7.1, 2.3, 9.9};
+    for (unsigned char i = 0; i < 3; i++) {
+        xvar = x[i];
+        // double* y2 = get_col(y, n_samples_y, n_vars_y, 2);
+
+        evppi_res = evppi(xvar, y, n_samples_x, n_vars_y);
+        if (fabs(evppi_res - reference_evppi[i]) > 0.5) {
+            printf("Wrong EVPI for variable %i: %f is not %f\n", i, evppi_res,
+                   reference_evppi[i]);
+            return 1;
+        }
+    }
+    printf("Test passed.\n");
 
     return 0;
 }

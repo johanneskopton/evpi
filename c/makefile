@@ -4,14 +4,14 @@ MYDIR=build
 
 all: main
 
-main: mkdir read_csv.o evpi.o
-	$(CC) $(CFLAGS) -o build/read_csv build/read_csv.o build/evpi.o -lm
+main: mkdir test.o evpi.o
+	$(CC) $(CFLAGS) -o build/test build/test.o build/evpi.o -lm
 
 mkdir:
 	[ -d $(MYDIR) ] || mkdir -p $(MYDIR)
 
-read_csv.o: read_csv.c
-	$(CC) $(CFLAGS) -c -o build/read_csv.o read_csv.c
+test.o: test.c
+	$(CC) $(CFLAGS) -c -o build/test.o test.c
 
 evpi.o: evpi.c
 	$(CC) $(CFLAGS) -c -o build/evpi.o evpi.c

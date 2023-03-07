@@ -142,7 +142,7 @@ double evppi(double* x, double** y, size_t n_samples, size_t n_options) {
 
 double evpi(double** y, size_t n_samples, size_t n_options) {
     double emv = maximum(mean_samples(y, n_samples, n_options), n_options);
-    double ev_pi = mean(max_vars(y, n_samples, n_options));
+    double ev_pi = mean(max_vars(y, n_samples, n_options), n_samples);
     return ev_pi - emv;
 }
 

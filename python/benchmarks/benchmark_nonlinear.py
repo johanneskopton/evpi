@@ -5,6 +5,7 @@ import time
 import py_evpi
 import evpi
 import regression_evpi
+import sorting_evpi
 from benchmark_problems import NonlinearBenchmarkProblem
 
 plt.style.use("seaborn-v0_8-whitegrid")
@@ -14,11 +15,13 @@ p = NonlinearBenchmarkProblem()
 nested_error = []
 binning_error = []
 binning_error_c = []
+sorting_error = []
 regression_error = []
 
 nested_time = 0
 binning_time = 0
 binning_time_c = 0
+sorting_time = 0
 regression_time = 0
 
 n_sample_range = range(1000, 50000, 1000)
@@ -66,6 +69,10 @@ for j, N_SAMPLES in enumerate(n_sample_range):
     binning_time_c += time.time() - timer
 
     timer = time.time()
+    sorting_evppi = sorting_evpi.sorting_multi_evppi(x, y)
+    sorting_time += time.time() - timer
+
+    timer = time.time()
     regression_evppi_res = regression_evpi.multi_evppi(x, y)
     regression_time += time.time() - timer
 
@@ -75,6 +82,7 @@ for j, N_SAMPLES in enumerate(n_sample_range):
     nested_error.append(rms(true_evppis - nested_mc_evppi_res))
     binning_error.append(rms(true_evppis - binning_evppi))
     binning_error_c.append(rms(true_evppis - binning_evppi_c))
+    sorting_error.append(rms(true_evppis - sorting_evppi))
     regression_error.append(rms(true_evppis - regression_evppi_res))
 
 fig, ax = plt.subplots(1)
@@ -84,6 +92,8 @@ ax.plot(n_sample_range, binning_error,
         label="1-level MC with binning ({:.2f} s)".format(binning_time))
 ax.plot(n_sample_range, binning_error,
         label="1-level MC with binning in C ({:.2f} s)".format(binning_time_c))
+ax.plot(n_sample_range, sorting_error,
+        label="1-level MC with sorting ({:.2f} s)".format(sorting_time))
 ax.plot(n_sample_range, regression_error,
         label="1-level MC with regression ({:.2f} s)".format(regression_time))
 ax.legend()

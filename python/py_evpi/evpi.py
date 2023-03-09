@@ -22,49 +22,15 @@ def _calc_ev_pi(x, y, n_bins):
         samples in the bin.
     """
 
-    # Since the expected value for just a handful of samples will
-    # always describe this bin a lot better than the expected
-    # value of the entire population (even though the sampling might
-    # have been completely random), this might seem like there is
-    # significant information value, when in fact there is not.
-    # Therefore bins with too few samples are kicked out.
-    # (Up to this point, this value showed no big impact in my tests.)
-    MIN_SAMPLES_PER_BIN = 1
+    bin_size = (np.max(x) - np.min(x)) / n_bins
+    n_samples = x.shape[0]
 
-    # Just a safety limit to avoid infinite loops for really weird input
-    # distributions
-    MAX_N_BINS = 1000
-
-    # increase the number of total bins, so we have at least `n_bins`
-    # bins with enough samples in them
-    total_n_bins = n_bins
-    n_bins_sufficient = 0
-    while n_bins_sufficient < n_bins and total_n_bins < MAX_N_BINS:
-        total_n_bins += n_bins_sufficient
-
-        # divide the estimate samples into histogram bins
-        hist, hist_bins = np.histogram(x, bins=total_n_bins)
-        # check which histogram bins have enough samples
-        sufficiency_mask = hist >= MIN_SAMPLES_PER_BIN
-        # count number of bins with enough samples
-        n_bins_sufficient = np.count_nonzero(sufficiency_mask)
-
-    # get indices of bins with enough samples
-    sufficient_bin_idxs = np.nonzero(sufficiency_mask)[0]
-    # calculate the total number of samples in these bins (for
-    # normalization later)
-    n_samples_considered = np.sum(hist[sufficiency_mask])
+    bin_idxs = ((x-np.min(x))/bin_size).astype(int)
 
     sum_res = 0
-
-    for i in sufficient_bin_idxs:
-        # create a binary mask for samples inside the bin
-        if i == total_n_bins-1:
-            subset_mask = (hist_bins[i] <= x) * (x <= hist_bins[i+1])
-        else:
-            subset_mask = (hist_bins[i] <= x) * (x < hist_bins[i+1])
+    for i in range(n_bins):
         # apply this mask on the output
-        y_subset = y[subset_mask, :]
+        y_subset = y[bin_idxs == i, :]
         # get the sum over all samples (aka weighted expected value)
         y_subset_sum = np.sum(y_subset, axis=0)
         # `np.sum(y_subset)` can be considered the expected outcome for
@@ -76,7 +42,7 @@ def _calc_ev_pi(x, y, n_bins):
         sum_res += np.max(y_subset_sum)
 
     # now the normalization
-    ev_pi = sum_res / n_samples_considered
+    ev_pi = sum_res / n_samples
     return ev_pi
 
 

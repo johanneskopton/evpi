@@ -70,42 +70,32 @@ double mean(double* vector, size_t length) {
     return result;
 }
 
-double* get_histogram_bins(double* vector, size_t length, unsigned int n_bins) {
-    double* result = malloc((n_bins + 1) * sizeof(double));
-    double min = minimum(vector, length);
-    double max = maximum(vector, length);
-    double step = (max - min) / (double)n_bins;
-    for (unsigned int i = 0; i < n_bins + 1; i++) {
-        result[i] = min + (double)i * step;
-    }
-    return result;
-}
-
 double* get_row(double** matrix, size_t row_idx) { return matrix[row_idx]; }
 
 double calc_ev_pi(double* x, double** y, size_t n_samples, size_t n_options,
                   unsigned int n_bins) {
-    double* histogram_bins = get_histogram_bins(x, n_samples, n_bins);
     double* y_subset_sum = malloc(n_options * sizeof(double));
     double sum_res = 0;
+
+    unsigned int* bin_idxs = malloc(n_samples * sizeof(unsigned int));
+    double x_min = minimum(x, n_samples);
+    double x_max = maximum(x, n_samples);
+    double bin_size = (x_max - x_min) / n_bins;
+    // iterate over all samples
+    for (size_t sample_i = 0; sample_i < n_samples; sample_i++) {
+        bin_idxs[sample_i] = (int)((x[sample_i] - x_min) / bin_size);
+    }
+
     // iterate over all bins
     for (unsigned int bin_i = 0; bin_i < n_bins; bin_i++) {
         // (re)set y_subset_sum to zero
         for (size_t option_i = 0; option_i < n_options; option_i++) {
             y_subset_sum[option_i] = 0;
         }
-        // iteratre over all samples
+        // iterate over all samples
         for (size_t sample_i = 0; sample_i < n_samples; sample_i++) {
-            // check if x value is in bin (continue otherwise)
-            if (bin_i == n_bins - 1) {
-                if (histogram_bins[bin_i] > x[sample_i] ||
-                    x[sample_i] > histogram_bins[bin_i + 1])
-                    continue;
-            } else {
-                if (histogram_bins[bin_i] > x[sample_i] ||
-                    x[sample_i] >= histogram_bins[bin_i + 1])
-                    continue;
-            }
+            if (bin_idxs[sample_i] != bin_i)
+                continue;
             // if in bin iterate over decision options
             for (size_t option_i = 0; option_i < n_options; option_i++) {
                 y_subset_sum[option_i] += y[option_i][sample_i];

@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.stats import norm
 
 
 def _calc_ev_pi(x, y, n_bins):
@@ -169,3 +170,120 @@ def multi_evppi(x, y, n_bins=None, significance_threshold=1e-3):
         evppi_results[i] = this_evpi
 
     return evppi_results
+
+
+def _calc_ev_ipi(x, y, std, n_bins):
+    """Loops through the bins of a histogram over the input and returns the
+    highest sum of the respective output samples.
+
+    Parameters
+    ----------
+    x : 1D array
+        Input samples.
+    y : 2D array
+        Output samples.
+    n_bins : int
+        Number of non-empty histogram bins.
+    std : float
+        Standard deviation of x after new information.
+
+    Returns
+    ------
+    int
+        Sum of optimal decision option output for each bin. Can be
+        interpreted as the expected value weighted with the number of
+        samples in the bin.
+    """
+
+    bin_size = (np.max(x) - np.min(x)) / n_bins
+    padding = int(5 * std / bin_size)
+
+    n_samples = x.shape[0]
+    n_options = y.shape[1]
+
+    bin_idxs = ((x-np.min(x))/bin_size).astype(int)
+
+    y_subset_means = np.empty((n_bins, n_options), dtype=float)
+    y_means = np.mean(y, axis=0)
+    bin_population = np.empty(n_bins, dtype=int)
+    for i in range(n_bins):
+        mask = bin_idxs == i
+        bin_population[i] = np.sum(mask)
+        # apply this mask on the output
+        y_subset = y[mask, :]
+        # get the mean over the subset
+        if len(y_subset) > 0:
+            y_subset_means[i, :] = np.mean(y_subset, axis=0)
+        else:
+            y_subset_means[i, :] = np.nan
+
+    def get_x_from_bin_i(i):
+        return np.min(x) + i * bin_size
+
+    weighted_sum_outcome = 0
+    for i in range(n_bins):
+        bin_center = get_x_from_bin_i(i+0.5)
+        weighted_sum_outcome_bin = 0
+        for j in range(-padding, n_bins+padding):
+            bin_prob = norm.cdf(get_x_from_bin_i(j+1), bin_center, std) - \
+                norm.cdf(get_x_from_bin_i(j), bin_center, std)
+            jj = min(max(0, j), n_bins-1)
+            selected_option_id = np.argmax(y_subset_means[jj, :])
+            outcome_bin = y_subset_means[i, selected_option_id]
+            if not np.isnan(outcome_bin):
+                weighted_sum_outcome_bin += outcome_bin * bin_prob
+            else:
+                weighted_sum_outcome_bin += y_means[selected_option_id] * \
+                    bin_prob
+        weighted_sum_outcome += weighted_sum_outcome_bin * bin_population[i]
+
+    # now the normalization
+    ev_pi = weighted_sum_outcome / n_samples
+    return ev_pi
+
+
+def evipi(x, y, std, n_bins=None):
+    """Calculates EVIPI for one estimate.
+    EVIPI means "Expected Value of Imperfect Parameter Information" and can be
+    described as a measure for what a decision maker would be willing to pay
+    for a given uncertainty on a certain variable.
+
+    Parameters
+    ----------
+    x : 1D array_like
+        Monte Carlo samples from the probability distribution of the
+        considered estimates or "input" variables. Samples are rows,
+        variables are columns.
+    y : 2D array_like
+        The respective utility (aka outcome) samples calculated using the
+        estimate samples of x. This criterion is considered to be the (only)
+        decision criterion for a risk-neutral decision maker, that chooses
+        the option with the highest expected utility. Samples are rows,
+        decision options are columns.
+    std : float
+        Standard deviation of x after new information.
+    n_bins : int
+        Number of non-empty bins to use for the histogram. Defaults to 3rd
+        root of sample number.
+    """
+    x = np.array(x)
+    if np.all(x == x[0]):
+        return 0
+    y = np.array(y)
+
+    n_samples = x.shape[0]
+
+    # use cubic root of sample number as default
+    if n_bins is None:
+        n_bins = int(np.cbrt(n_samples))
+
+    # expected values for all options
+    ev = np.mean(y, axis=0)
+
+    # expected maximum value
+    emv = np.max(ev)
+
+    ev_ipi = _calc_ev_ipi(x, y, std, n_bins)
+    evipi = ev_ipi - emv
+
+    return evipi

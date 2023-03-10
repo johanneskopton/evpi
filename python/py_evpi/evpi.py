@@ -95,7 +95,7 @@ def evpi(y):
     """Comparative total EVPI.
     Expected value of making always the best decision. If the model itself is
     deterministic, i.e. the only source of uncertainty are the input variables,
-    this value should correspond to the sum of all individual comparative
+    this value should be less than the sum of all individual comparative
     EVPIs.
 
     Parameters
@@ -110,7 +110,7 @@ def evpi(y):
 
     y = np.array(y)
 
-    # expected value in the case of "yes"
+    # expected value
     ev = np.mean(y, axis=0)
 
     # expected maximum value

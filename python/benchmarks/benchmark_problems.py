@@ -33,10 +33,23 @@ class LinearBenchmarkProblem1(LinearBenchmarkProblem):
 
 class LinearBenchmarkProblem2(LinearBenchmarkProblem):
     def __init__(self):
-        self.COEFFICIENTS = np.array([[-2, -3, -1],
+        self.COEFFICIENTS = np.array([[0, -20, 0],
                                       [0, 40, 5],
                                       [0, 8, 2]])
         super().__init__()
+
+
+class NonlinearBenchmarkProblem3(LinearBenchmarkProblem):
+    def __init__(self):
+        self.COEFFICIENTS = np.array([[-2, 3, 0],
+                                      [5, -4, 0],
+                                      [0, -3, 2]])
+        super().__init__()
+
+    def utility(self, x):
+        y = (self.COEFFICIENTS @ x.T).T
+        y[:, 2] += 20
+        return y
 
 
 class NonlinearBenchmarkProblem(LinearBenchmarkProblem1):

@@ -48,8 +48,8 @@ def _calc_ev_pi(x, y, n_bins):
 
 
 def evppi(x, y, n_bins=None):
-    """Calculates EVPPI for one estimate and one decision criterion.
-    EVPI means "Expected Value of Perfect Parameter Information" and can be
+    """Calculates EVPPI for one estimate.
+    EVPPI means "Expected Value of Perfect Parameter Information" and can be
     described as a measure for what a decision maker would be willing to pay
     for zero uncertainty on a certain variable.
 
@@ -196,15 +196,15 @@ def _calc_ev_ipi(x, y, std, n_bins):
     """
 
     bin_size = (np.max(x) - np.min(x)) / n_bins
-    padding = int(5 * std / bin_size)
 
-    n_samples = x.shape[0]
+    x_mean = np.mean(x)
+    x_std = np.std(x)
+
     n_options = y.shape[1]
 
     bin_idxs = ((x-np.min(x))/bin_size).astype(int)
 
     y_subset_means = np.empty((n_bins, n_options), dtype=float)
-    y_means = np.mean(y, axis=0)
     bin_population = np.empty(n_bins, dtype=int)
     for i in range(n_bins):
         mask = bin_idxs == i
@@ -224,21 +224,18 @@ def _calc_ev_ipi(x, y, std, n_bins):
     for i in range(n_bins):
         bin_center = get_x_from_bin_i(i+0.5)
         weighted_sum_outcome_bin = 0
-        for j in range(-padding, n_bins+padding):
+        for j in range(n_bins):
             bin_prob = norm.cdf(get_x_from_bin_i(j+1), bin_center, std) - \
                 norm.cdf(get_x_from_bin_i(j), bin_center, std)
-            jj = min(max(0, j), n_bins-1)
-            selected_option_id = np.argmax(y_subset_means[jj, :])
-            outcome_bin = y_subset_means[i, selected_option_id]
+            outcome_bin = np.max(y_subset_means[i, :])
             if not np.isnan(outcome_bin):
                 weighted_sum_outcome_bin += outcome_bin * bin_prob
-            else:
-                weighted_sum_outcome_bin += y_means[selected_option_id] * \
-                    bin_prob
-        weighted_sum_outcome += weighted_sum_outcome_bin * bin_population[i]
+        outer_bin_prob = norm.cdf(get_x_from_bin_i(i+1), x_mean, x_std-std) - \
+            norm.cdf(get_x_from_bin_i(i), x_mean, x_std-std)
+        weighted_sum_outcome += weighted_sum_outcome_bin * outer_bin_prob
 
     # now the normalization
-    ev_pi = weighted_sum_outcome / n_samples
+    ev_pi = weighted_sum_outcome
     return ev_pi
 
 

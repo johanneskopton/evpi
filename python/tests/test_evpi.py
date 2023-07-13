@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from py_evpi import evpi, evppi, multi_evppi, binary_evppi
+from py_evpi import evpi, evppi, multi_evppi, binary_evppi, evipi
 
 x = pd.read_csv("../test_data/x.csv", index_col=0)
 y = pd.read_csv("../test_data/y.csv", index_col=0)
@@ -23,7 +23,17 @@ def test_evppi():
 
 def test_multi_evppi():
     assert np.allclose(multi_evppi(x, y), [7.1, 2.3, 9.9], atol=atol)
+    assert np.allclose(multi_evppi(x, y-100), [7.1, 2.3, 9.9], atol=atol)
+    assert np.allclose(multi_evppi(x, y+100), [7.1, 2.3, 9.9], atol=atol)
 
 
 def test_binary_evpi():
     assert np.isclose(binary_evppi(x.x1, y.y1), 5.9, atol=atol)
+
+
+def test_evipi():
+    a = []
+    for i in range(1, 20, 2):
+        a.append(evipi(x.x1, y, i))
+    print(a)
+    assert False

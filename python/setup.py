@@ -25,6 +25,7 @@ setup(
     ],
     install_requires=[
         "numpy >= 1.19",
+        "scipy >= 1.10"
     ],
     extras_require={
         "dev": [
@@ -32,7 +33,6 @@ setup(
             "flake8",
             "matplotlib>3.6",
             "pandas",
-            "scipy",
             "pygam >= 0.8",
             "numpy < 1.24",  # for pygam
             "pytest"

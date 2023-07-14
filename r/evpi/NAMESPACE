@@ -1,0 +1,9 @@
+# Import required packages
+# none so far
+
+# Load dynamic libraries (shared object files)
+useDynLib(evpi)
+
+# Export functions defined in R code
+export("multi_evppi")
+export("binary_multi_evppi")

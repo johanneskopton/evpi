@@ -5,6 +5,9 @@ Version: 0.1-1
 Date: 2023-07-14
 Author: Johannes Kopton <johannes@kopton.org>
 Maintainer: Johannes Kopton <johannes@kopton.org>
-Description: A package that provides fast calculation of Expected Value of Perfect Information (EVPI)
-Depends: R
+Description: A package that provides fast calculation of Expected Value of
+  Perfect Information (EVPI)
+License: GPL-3
+Depends: R (>= 3.1.3)
 Collate: evpi_wrapper.R
+RoxygenNote: 7.2.3

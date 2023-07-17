@@ -132,3 +132,4 @@ dmypy.json
 evpi_experiments
 *.csv
 plots
+.Rproj.user

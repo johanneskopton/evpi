@@ -13,7 +13,7 @@ evpi_module = Extension("evpi",
 
 setup(
     name="evpi",
-    version="0.1.0",
+    version="1.0.0",
     author="Johannes Kopton",
     author_email="johannes@kopton.org",
     description=("Python wrapper for EVPI implementation in C."),

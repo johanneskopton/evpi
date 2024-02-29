@@ -22,6 +22,7 @@ setup(
         "Topic :: Scientific/Engineering",
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
+        "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
     ],
     install_requires=[
         "numpy >= 1.19",

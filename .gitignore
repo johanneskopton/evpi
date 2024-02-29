@@ -133,3 +133,9 @@ evpi_experiments
 *.csv
 plots
 .Rproj.user
+
+# C
+*.o
+
+# R
+.Rhistory

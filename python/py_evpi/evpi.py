@@ -38,7 +38,7 @@ def _calc_ev_pi(x, y, n_bins):
         # this bin multiplied by number of samples in this bin. Since we
         # use the maximum value among all choices, we simulate knowing
         # that this bin contains the true sample.
-        # By summing and normalization with `n_samples_considered`, we get the
+        # By summing and normalization with `n_samples`, we get the
         # weighted sum of expected outcomes.
         sum_res += np.max(y_subset_sum)
 

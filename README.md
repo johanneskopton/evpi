@@ -1,3 +1,7 @@
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10728646.svg)](https://doi.org/10.5281/zenodo.10728646)
+
+
 # A fast implementation of the Expected Value of Perfect Parameter Information (EVPPI) for large Monte Carlo simulations
 
 In this repository you can find 4 things:
